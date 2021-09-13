@@ -263,14 +263,17 @@ while sair != True: #CÓDIGO REFERENTE AO MAPA 1
         auxTempoBala1 = current_time
     if auxTempoBala1 + tempoBala1 == current_time: # a bala vai ser disparada a cada tempo definido da bala (de 1 a 3) de forma aleatória
         bala1X = canhao1X # a bala volta para a posição inicial
+        tempoBala1 = randint(1,3)
     if pygame.Rect(bala2X, bala2Y, 10, 10).collidepoint(0, bala2Y):
         auxTempoBala2 = current_time
     if auxTempoBala2 + tempoBala2 == current_time:
         bala2X = canhao2X
+        tempoBala2 = randint(1,3)
     if pygame.Rect(bala3X, bala3Y, 10, 10).collidepoint(0, bala3Y):
         auxTempoBala3 = current_time
     if auxTempoBala3 + tempoBala3 == current_time:
         bala3X = canhao3X
+        tempoBala3 = randint(1,3)
     if jogador.colliderect(bala1) or jogador.colliderect(bala2) or jogador.colliderect(bala3):
         time.sleep(1)
         jogadorX = 25
