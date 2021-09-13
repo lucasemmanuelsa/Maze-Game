@@ -34,15 +34,9 @@ verdelimao = (15, 255, 149)
 vermelho = (255, 49, 46)
 azul = (72, 172, 240)
 rosa = (252, 24, 152)
-transparente = (0, 0, 0, 0)
 
 # Carregando fonte
 fonte = pygame.font.Font('Gamer.ttf', 55)
-
-# imagem do canhão
-canhaoImagem = pygame.image.load(os.path.join(diretorio_imagens, 'canhao.png'))
-canhaoImagem = pygame.transform.scale(canhaoImagem, (24, 24))
-canhaoImagem = pygame.transform.flip(canhaoImagem, True, False)
 
 # imagem de coração
 coracaoImagem1 = pygame.image.load(os.path.join(diretorio_imagens, 'coracao.png'))
@@ -73,7 +67,11 @@ coracaoImagem5 = pygame.transform.scale(coracaoImagem5, (36, 36))
 
 coracao5X = 154
 coracao5Y = 500
-
+#----------------------------------------------------------------------------------------------
+# imagem do canhão
+canhaoImagem = pygame.image.load(os.path.join(diretorio_imagens, 'canhao.png'))
+canhaoImagem = pygame.transform.scale(canhaoImagem, (24, 24))
+canhaoImagem = pygame.transform.flip(canhaoImagem, True, False)
 
 # posição do canhão 1
 canhao1X = 475
@@ -86,10 +84,9 @@ bala1MudançaX = 0
 tempoBala1 = randint(1,3)
 auxTempoBala1 = -tempoBala1
 
-
 # posição do canhão 2
 canhao2X = 475
-canhao2Y = 200
+canhao2Y = 225
 
 # bala canhao 2
 bala2X = canhao2X
@@ -100,7 +97,7 @@ auxTempoBala2 = -tempoBala2
 
 # posição do canhão 3
 canhao3X = 475
-canhao3Y = 300
+canhao3Y = 350
 
 # bala canhao 3
 bala3X = canhao3X
@@ -109,16 +106,8 @@ bala3MudançaX = 0
 tempoBala3 = randint(1,3)
 auxTempoBala3 = -tempoBala3
 
-# posição do canhão 4
-canhao4X = 200
-canhao4Y = 475
-
-# bala canhao 4
-bala4X = canhao4X
-bala4Y = canhao4Y
-
 velocidadeBala = 9
-
+#-----------------------------------------------------------------------------------------------
 def criarCanhão(x, y):
     janela.blit(canhaoImagem, (x, y))
 
@@ -133,8 +122,6 @@ mapa.image = pygame.image.load(os.path.join(diretorio_imagens, 'mapa.png'))
 mapa.image = pygame.transform.scale(mapa.image, (510, 510))
 mapa.rect = pygame.Rect(-5, -5, 500, 500)
 
-
-
 # Posiçao do jogador
 jogadorX = 25
 jogadorY = 25
@@ -145,7 +132,19 @@ jogadorMudançaY = 0
 chegadaX = 438
 chegadaY = 27
 
+# Velocidade do jogador
+velocidade = 2
 
+# Espessura das paredes limitadoras
+espessura = 9
+
+# Contador de vida
+vida = 5
+
+# criando a variavel para armazenar o tempo
+current_time = 0 
+
+#-----------------------------------------------------------------------------------------
 janela.fill(preto)  # pinta a cor do fundo
 
 # texto 'Nível 1' antes de começar o jogo
@@ -156,28 +155,18 @@ janela.blit(texto, (180, 215))
 pygame.display.flip()
 time.sleep(3)
 
-# Velocidade do jogador
-velocidade = 2
-
-# Espessura das paredes
-espessura = 9
-
 listaX = []
 listaY = []
 
-janela.fill(azul) # pinta a janela de preto novamente
-
-pygame.display.flip()
+janela.fill(azul) # pinta a janela novamente
 
 drawGroup.draw(janela)
 
-for x in range(500): #pega as coordenadas de cada pixel preto do meu mapa 
+for x in range(500): # pega as coordenadas de cada pixel preto do meu mapa 
         for y in range(500):
             if janela.get_at((x, y)) == preto:
                 listaX.append(x)
                 listaY.append(y)
-vida = 5
-current_time = 0 #criando a variavel para armazenar o tempo
 
 # Game loop, para a janela nao sumir rapidamente e o jogo permanecer rodando. Sem o while o programa fecha, por isso, quando apertar o botao fechar (pygame.QUIT), ele quebra o while e a janela encerra
 sair = False
@@ -198,7 +187,6 @@ while sair != True: #CÓDIGO REFERENTE AO MAPA 1
     bala2 = pygame.Rect(bala2X, bala2Y, 10, 10)
     bala3 = pygame.Rect(bala3X, bala3Y, 10, 10)
 
-    # drawGroup.draw(janela)
     for i in range(len(listaX)):
         janela.set_at((listaX[i], listaY[i]), branco)
         
