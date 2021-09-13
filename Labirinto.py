@@ -1,6 +1,7 @@
 import time
 import pygame
 import os
+from random import randint
 
 # inicializa todos os módulos que necessitam de inicialização dentro do pygame.
 pygame.init()
@@ -43,43 +44,87 @@ canhaoImagem = pygame.image.load(os.path.join(diretorio_imagens, 'canhao.png'))
 canhaoImagem = pygame.transform.scale(canhaoImagem, (24, 24))
 canhaoImagem = pygame.transform.flip(canhaoImagem, True, False)
 
+# imagem de coração
+coracaoImagem1 = pygame.image.load(os.path.join(diretorio_imagens, 'coracao.png'))
+coracaoImagem1 = pygame.transform.scale(coracaoImagem1, (36, 36))
+coracao1X = 10
+coracao1Y = 500
+
+coracaoImagem2 = pygame.image.load(os.path.join(diretorio_imagens, 'coracao.png'))
+coracaoImagem2 = pygame.transform.scale(coracaoImagem2, (36, 36))
+
+coracao2X = 46
+coracao2Y = 500
+
+coracaoImagem3 = pygame.image.load(os.path.join(diretorio_imagens, 'coracao.png'))
+coracaoImagem3 = pygame.transform.scale(coracaoImagem3, (36, 36))
+
+coracao3X = 82
+coracao3Y = 500
+
+coracaoImagem4 = pygame.image.load(os.path.join(diretorio_imagens, 'coracao.png'))
+coracaoImagem4 = pygame.transform.scale(coracaoImagem4, (36, 36))
+
+coracao4X = 118
+coracao4Y = 500
+
+coracaoImagem5 = pygame.image.load(os.path.join(diretorio_imagens, 'coracao.png'))
+coracaoImagem5 = pygame.transform.scale(coracaoImagem5, (36, 36))
+
+coracao5X = 154
+coracao5Y = 500
+
+
 # posição do canhão 1
 canhao1X = 475
 canhao1Y = 100
-
-# posição do canhão 2
-canhao2X = 475
-canhao2Y = 200
-
-# posição do canhão 3
-canhao3X = 475
-canhao3Y = 300
-
-# posição do canhão 4
-canhao4X = 200
-canhao4Y = 475
 
 # bala canhao 1
 bala1X = canhao1X
 bala1Y = canhao1Y + 8
 bala1MudançaX = 0
-tempoBala = 3
-auxTempo = -3
-velocidadeBala = 9
+tempoBala1 = randint(1,3)
+auxTempoBala1 = -tempoBala1
+
+
+# posição do canhão 2
+canhao2X = 475
+canhao2Y = 200
 
 # bala canhao 2
 bala2X = canhao2X
 bala2Y = canhao2Y + 8
 bala2MudançaX = 0
+tempoBala2 = randint(1,3)
+auxTempoBala2 = -tempoBala2
+
+# posição do canhão 3
+canhao3X = 475
+canhao3Y = 300
 
 # bala canhao 3
 bala3X = canhao3X
 bala3Y = canhao3Y + 8
 bala3MudançaX = 0
+tempoBala3 = randint(1,3)
+auxTempoBala3 = -tempoBala3
+
+# posição do canhão 4
+canhao4X = 200
+canhao4Y = 475
 
 # bala canhao 4
 bala4X = canhao4X
 bala4Y = canhao4Y
+
+velocidadeBala = 9
+
+def criarCanhão(x, y):
+    janela.blit(canhaoImagem, (x, y))
+
+def criarCoracao(imagem, x, y):
+    janela.blit(imagem, (x, y))
+
 
 # imagem do mapa
 drawGroup = pygame.sprite.Group()
@@ -100,8 +145,6 @@ jogadorMudançaY = 0
 chegadaX = 438
 chegadaY = 27
 
-def criarCanhão(x, y):
-    janela.blit(canhaoImagem, (x, y))
 
 janela.fill(preto)  # pinta a cor do fundo
 
@@ -145,13 +188,15 @@ while sair != True: #CÓDIGO REFERENTE AO MAPA 1
     janela.fill(preto) # pinta a janela de preto novamente
 
     cronometro = fonte.render('Tempo: ' + str(current_time), True, branco)
-    janela.blit(cronometro, (155, 500)) # adiciona o cronometro na tela
+    janela.blit(cronometro, (300, 480)) # adiciona o cronometro na tela
 
     jogador = pygame.Rect(jogadorX, jogadorY, 14, 14)
 
     chegada = pygame.Rect(chegadaX, chegadaY, 14, 14)
 
     bala1 = pygame.Rect(bala1X, bala1Y, 10, 10)
+    bala2 = pygame.Rect(bala2X, bala2Y, 10, 10)
+    bala3 = pygame.Rect(bala3X, bala3Y, 10, 10)
 
     # drawGroup.draw(janela)
     for i in range(len(listaX)):
@@ -163,6 +208,8 @@ while sair != True: #CÓDIGO REFERENTE AO MAPA 1
     pygame.draw.rect(janela, azul, (chegada)) # desenha minha chegada
 
     pygame.draw.rect(janela, rosa, (bala1)) # desenha a bala do canhao 1
+    pygame.draw.rect(janela, rosa, (bala2)) # desenha a bala do canhao 2
+    pygame.draw.rect(janela, rosa, (bala3)) # desenha a bala do canhao 3
     
 
     pygame.draw.line(janela, branco, [16,20], [484,20], espessura) # barra horizontal superior
@@ -170,7 +217,11 @@ while sair != True: #CÓDIGO REFERENTE AO MAPA 1
     pygame.draw.line(janela, branco, [480,20], [480,480], espessura) # barra vertical direita
     pygame.draw.line(janela, branco, [16,480], [484,480], espessura) # barra horizontal inferior
     
+    #movimentação das balas
     bala1MudançaX = - velocidadeBala
+    bala2MudançaX = - velocidadeBala
+    bala3MudançaX = - velocidadeBala
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT: # evento de fechar o jogo
             sair = True
@@ -194,19 +245,45 @@ while sair != True: #CÓDIGO REFERENTE AO MAPA 1
     jogadorY += jogadorMudançaY
 
     bala1X += bala1MudançaX
+    bala2X += bala2MudançaX
+    bala3X += bala3MudançaX
     
     criarCanhão(canhao1X, canhao1Y)
+    criarCanhão(canhao2X, canhao2Y)
+    criarCanhão(canhao3X, canhao3Y)
+
+    criarCoracao(coracaoImagem1, coracao1X, coracao1Y)
+    criarCoracao(coracaoImagem2, coracao2X, coracao2Y)
+    criarCoracao(coracaoImagem3, coracao3X, coracao3Y)
+    criarCoracao(coracaoImagem4, coracao4X, coracao4Y)
+    criarCoracao(coracaoImagem5, coracao5X, coracao5Y)
+
     
-    if pygame.Rect(bala1X, bala1Y, 10, 10).collidepoint(0, bala1Y):
-        auxTempo = current_time
-    if auxTempo + tempoBala == current_time:
-        bala1X = canhao1X
-    if jogador.colliderect(bala1):
+    if pygame.Rect(bala1X, bala1Y, 10, 10).collidepoint(0, bala1Y): #se a bala encostar na borda da janela do jogo a variavel auxiliar vai receber o tempo do jogo nesse exato momento
+        auxTempoBala1 = current_time
+    if auxTempoBala1 + tempoBala1 == current_time: # a bala vai ser disparada a cada tempo definido da bala (de 1 a 3) de forma aleatória
+        bala1X = canhao1X # a bala volta para a posição inicial
+    if pygame.Rect(bala2X, bala2Y, 10, 10).collidepoint(0, bala2Y):
+        auxTempoBala2 = current_time
+    if auxTempoBala2 + tempoBala2 == current_time:
+        bala2X = canhao2X
+    if pygame.Rect(bala3X, bala3Y, 10, 10).collidepoint(0, bala3Y):
+        auxTempoBala3 = current_time
+    if auxTempoBala3 + tempoBala3 == current_time:
+        bala3X = canhao3X
+    if jogador.colliderect(bala1) or jogador.colliderect(bala2) or jogador.colliderect(bala3):
         time.sleep(1)
         jogadorX = 25
         jogadorY = 25
         vida -= 1
-        print(vida)
+    if vida == 4:
+        coracaoImagem5.set_alpha(0)
+    elif vida == 3:
+        coracaoImagem4.set_alpha(0)
+    elif vida == 2:
+        coracaoImagem3.set_alpha(0)
+    elif vida == 1:
+        coracaoImagem2.set_alpha(0)
     if vida == 0:
         sair = True
         
