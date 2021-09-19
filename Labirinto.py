@@ -36,6 +36,15 @@ azul = (72, 172, 240)
 rosa = (252, 24, 152)
 roxo = (27, 20, 100)
 
+def criarCanhão(x, y):
+    janela.blit(canhaoImagem, (x, y))
+
+def criarCoracao(imagem, x, y):
+    janela.blit(imagem, (x, y))
+
+def desenharMapa(mapa, x, y):
+    janela.blit(mapa, (x, y))
+
 # Carregando fonte
 fonte = pygame.font.Font('Gamer.ttf', 55)
 
@@ -107,24 +116,15 @@ bala3MudançaX = 0
 tempoBala3 = randint(1,3)
 auxTempoBala3 = -tempoBala3
 
+#velocidade das balas dos canhões
 velocidadeBala = 9
 #-----------------------------------------------------------------------------------------------
-def criarCanhão(x, y):
-    janela.blit(canhaoImagem, (x, y))
-
-def criarCoracao(imagem, x, y):
-    janela.blit(imagem, (x, y))
-
-def desenharMapa(mapa, x, y):
-    janela.blit(mapa, (x, y))
 
 
 # imagem do mapa 1
-drawGroup = pygame.sprite.Group()
-mapa = pygame.sprite.Sprite(drawGroup)
-mapa.image = pygame.image.load(os.path.join(diretorio_imagens, 'mapa.png'))
-mapa.image = pygame.transform.scale(mapa.image, (510, 510))
-mapa.rect = pygame.Rect(-5, -5, 500, 500)
+mapa1 = pygame.image.load(os.path.join(diretorio_imagens, 'mapa.png'))
+mapa1 = pygame.transform.scale(mapa1, (510, 510))
+
 
 # imagem do mapa 2
 mapa2 = pygame.image.load(os.path.join(diretorio_imagens, 'mapa2.png'))
@@ -143,29 +143,27 @@ chegada = pygame.image.load(os.path.join(diretorio_imagens, 'chegada.png'))
 chegada = pygame.transform.scale(chegada, (16, 16))
 rectChegada = chegada.get_rect()
 
+# Posição da chegada
+chegadaX = 438
+chegadaY = 27
+
 # imagem do jogador
 jogadorImagem = pygame.image.load(os.path.join(diretorio_imagens, 'jogador.png'))
+jogadorImagem = pygame.transform.scale(jogadorImagem, (14, 14))
 rectJogador = jogadorImagem.get_rect()
-
 
 # Posiçao do jogador
 jogadorX = 25 
 jogadorY = 25 
 jogadorMudançaX = 0
 jogadorMudançaY = 0
-
-# Posição da chegada
-chegadaX = 438
-chegadaY = 27
-
 # Velocidade do jogador
 velocidade = 2
+# Contador de vida
+vida = 5
 
 # Espessura das paredes limitadoras
 espessura = 9
-
-# Contador de vida
-vida = 5
 
 # criando a variavel para armazenar o tempo
 current_time = 0 
@@ -186,7 +184,7 @@ listaY = []
 
 janela.fill(azul) # pinta a janela novamente
 
-drawGroup.draw(janela)
+desenharMapa(mapa1, -5, -5)
 
 for x in range(500): # pega as coordenadas de cada pixel preto do mapa 
         for y in range(500):
@@ -243,7 +241,7 @@ while sair != True: #CÓDIGO REFERENTE AO MAPA 1
     janela.fill(preto) # pinta a janela de preto novamente
 
     cronometro = fonte.render('Tempo: ' + str(current_time), True, branco)
-    janela.blit(cronometro, (300, 480)) # adiciona o cronometro na tela
+    janela.blit(cronometro, (285, 490)) # adiciona o cronometro na tela
 
     jogador = pygame.Rect(jogadorX, jogadorY, 14, 14)
 
@@ -288,9 +286,7 @@ while sair != True: #CÓDIGO REFERENTE AO MAPA 1
             if event.key == pygame.K_LEFT:
                 jogadorMudançaX = - velocidade
             if event.key == pygame.K_RIGHT:
-                jogadorMudançaX = velocidade
-                jogadorImagem = pygame.transform.flip(jogadorImagem, False, False)
-                janela.blit(jogadorImagem, rectJogador)                
+                jogadorMudançaX = velocidade   
             if event.key == pygame.K_UP:
                 jogadorMudançaY = - velocidade
             if event.key == pygame.K_DOWN:
@@ -300,6 +296,7 @@ while sair != True: #CÓDIGO REFERENTE AO MAPA 1
                 jogadorMudançaX = 0
             if event.key == pygame.K_UP or event.key == pygame.K_DOWN:
                 jogadorMudançaY = 0
+    
     
 
     jogadorX += jogadorMudançaX
@@ -334,7 +331,7 @@ while sair != True: #CÓDIGO REFERENTE AO MAPA 1
         auxTempoBala3 = current_time
     if auxTempoBala3 + tempoBala3 == current_time:
         bala3X = canhao3X
-        #tempoBala3 = randint(1,3)
+        tempoBala3 = randint(1,3)
     if jogador.colliderect(bala1) or jogador.colliderect(bala2) or jogador.colliderect(bala3):
         time.sleep(1)
         jogadorX = 25
@@ -371,7 +368,7 @@ while sair != True: #CÓDIGO REFERENTE AO MAPA 1
     if jogador.colliderect(rectChegada):
         # Tela antes do proximo mapa
         janela.fill(preto)
-        texto2 = fonte.render('Nível 2', True, branco)
+        texto2 = fonte.render('Nível 2', True, vermelho)
         janela.blit(texto2, (180, 215))
         pygame.display.flip()
         time.sleep(5)
