@@ -128,7 +128,7 @@ mapa1 = pygame.transform.scale(mapa1, (510, 510))
 
 # imagem do mapa 2
 mapa2 = pygame.image.load(os.path.join(diretorio_imagens, 'mapa2.png'))
-mapa2 = pygame.transform.scale(mapa2, (575, 575))
+mapa2 = pygame.transform.scale(mapa2, (520, 460))
 
 # imagem do mapa 3
 mapa3 = pygame.image.load(os.path.join(diretorio_imagens, 'mapa3.png'))
@@ -154,7 +154,7 @@ rectJogador = jogadorImagem.get_rect()
 
 # Posiçao do jogador
 jogadorX = 25 
-jogadorY = 25 
+jogadorY = 25
 jogadorMudançaX = 0
 jogadorMudançaY = 0
 # Velocidade do jogador
@@ -166,7 +166,7 @@ vida = 5
 espessura = 9
 
 # criando a variavel para armazenar o tempo
-current_time = 0 
+tempoMapa1 = 0 
 
 #-----------------------------------------------------------------------------------------
 janela.fill(preto)  # pinta a cor do fundo
@@ -198,10 +198,10 @@ lista2Y = []
 
 janela.fill(azul)
 
-janela.blit(mapa2, (-38,-38))
+janela.blit(mapa2, (-38,16))
 for x in range(500):
     for y in range(500):
-        if janela.get_at((x,y)) == preto:
+        if janela.get_at((x,y)) == branco:
             lista2X.append(x)
             lista2Y.append(y)
             
@@ -236,11 +236,11 @@ for x in range(500):
 sair = False
 while sair != True: #CÓDIGO REFERENTE AO MAPA 1
     
-    current_time = int(pygame.time.get_ticks()/1000) - 3 # contagem do tempo
+    tempoMapa1 = int(pygame.time.get_ticks()/1000) - 3 # contagem do tempo
 
     janela.fill(preto) # pinta a janela de preto novamente
 
-    cronometro = fonte.render('Tempo: ' + str(current_time), True, branco)
+    cronometro = fonte.render('Tempo: ' + str(tempoMapa1), True, branco)
     janela.blit(cronometro, (285, 490)) # adiciona o cronometro na tela
 
     jogador = pygame.Rect(jogadorX, jogadorY, 14, 14)
@@ -257,10 +257,7 @@ while sair != True: #CÓDIGO REFERENTE AO MAPA 1
     rectChegada.x = chegadaX
     rectChegada.y = chegadaY
 
-    rectJogador.x = jogadorX
-    rectJogador.y = jogadorY
-    #pygame.draw.rect(janela, vermelho, (jogador)) # desenha meu jogador
-    janela.blit(jogadorImagem, rectJogador)
+    pygame.draw.rect(janela, vermelho, (jogador)) # desenha meu jogador
     janela.blit(chegada, rectChegada)
     #pygame.draw.rect(janela, azul, (chegada)) # desenha minha chegada
     
@@ -297,8 +294,6 @@ while sair != True: #CÓDIGO REFERENTE AO MAPA 1
             if event.key == pygame.K_UP or event.key == pygame.K_DOWN:
                 jogadorMudançaY = 0
     
-    
-
     jogadorX += jogadorMudançaX
     jogadorY += jogadorMudançaY
 
@@ -318,18 +313,18 @@ while sair != True: #CÓDIGO REFERENTE AO MAPA 1
 
     
     if pygame.Rect(bala1X, bala1Y, 10, 10).collidepoint(0, bala1Y): #se a bala encostar na borda da janela do jogo a variavel auxiliar vai receber o tempo do jogo nesse exato momento
-        auxTempoBala1 = current_time
-    if auxTempoBala1 + tempoBala1 == current_time: # a bala vai ser disparada a cada tempo definido da bala (de 1 a 3) de forma aleatória
+        auxTempoBala1 = tempoMapa1
+    if auxTempoBala1 + tempoBala1 == tempoMapa1: # a bala vai ser disparada a cada tempo definido da bala (de 1 a 3) de forma aleatória
         bala1X = canhao1X # a bala volta para a posição inicial
         tempoBala1 = randint(1,3)
     if pygame.Rect(bala2X, bala2Y, 10, 10).collidepoint(0, bala2Y):
-        auxTempoBala2 = current_time
-    if auxTempoBala2 + tempoBala2 == current_time:
+        auxTempoBala2 = tempoMapa1
+    if auxTempoBala2 + tempoBala2 == tempoMapa1:
         bala2X = canhao2X
         tempoBala2 = randint(1,3)
     if pygame.Rect(bala3X, bala3Y, 10, 10).collidepoint(0, bala3Y):
-        auxTempoBala3 = current_time
-    if auxTempoBala3 + tempoBala3 == current_time:
+        auxTempoBala3 = tempoMapa1
+    if auxTempoBala3 + tempoBala3 == tempoMapa1:
         bala3X = canhao3X
         tempoBala3 = randint(1,3)
     if jogador.colliderect(bala1) or jogador.colliderect(bala2) or jogador.colliderect(bala3):
@@ -373,18 +368,23 @@ while sair != True: #CÓDIGO REFERENTE AO MAPA 1
         pygame.display.flip()
         time.sleep(5)
 
-        jogadorX = 452
-        jogadorY = 25
+        jogadorX = 25
+        jogadorY = 60
 
-        chegadaX = 462
-        chegadaY = 462
+        chegadaX = 25
+        chegadaY = 25
 
-        velocidade = 3
+        velocidade = 2
 
         while sair != True: #Código do mapa 2
-            janela.fill(branco)
+            janela.fill(preto)
             
-            janela.blit(mapa2, (-38,-38))
+            tempoMapa2 = int(pygame.time.get_ticks()/1000) - (tempoMapa1+9)
+            cronometro = fonte.render('Tempo: ' + str(tempoMapa2), True, branco)
+
+            janela.blit(cronometro, (285, 490))
+
+            janela.blit(mapa2, (-38, 16))
 
             jogador = pygame.Rect(jogadorX, jogadorY, 14, 14)
 
@@ -393,21 +393,21 @@ while sair != True: #CÓDIGO REFERENTE AO MAPA 1
 
             pygame.draw.rect(janela, vermelho, (jogador)) # desenha meu jogador
 
-            pygame.draw.rect(janela, preto, (chegada)) # desenha minha chegada
+            pygame.draw.rect(janela, verdelimao, (chegada)) # desenha minha chegada
             
-            pygame.draw.line(janela, preto, [16,20], [484,20], espessura) # barra horizontal superior
-            pygame.draw.line(janela, preto, [20,20], [20, 480], espessura) # barra na vertical esquerda
-            pygame.draw.line(janela, preto, [480,20], [480,480], espessura) # barra vertical direita
-            pygame.draw.line(janela, preto, [16,480], [484,480], espessura) # barra horizontal inferior
+            pygame.draw.line(janela, branco, [16,20], [484,20], espessura) # barra horizontal superior
+            pygame.draw.line(janela, branco, [20,20], [20, 480], espessura) # barra na vertical esquerda
+            pygame.draw.line(janela, branco, [480,20], [480,480], espessura) # barra vertical direita
+            pygame.draw.line(janela, branco, [16,480], [484,480], espessura) # barra horizontal inferior
 
-            for event in pygame.event.get(): # evento de fechar o jogo
-                if event.type == pygame.QUIT:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT: # evento de fechar o jogo
                     sair = True
-                if event.type == pygame.KEYDOWN: # evento das teclas
+                if event.type == pygame.KEYDOWN: # evento de controle, movimentar o jogador
                     if event.key == pygame.K_LEFT:
                         jogadorMudançaX = - velocidade
                     if event.key == pygame.K_RIGHT:
-                        jogadorMudançaX = velocidade
+                        jogadorMudançaX = velocidade   
                     if event.key == pygame.K_UP:
                         jogadorMudançaY = - velocidade
                     if event.key == pygame.K_DOWN:
@@ -446,7 +446,7 @@ while sair != True: #CÓDIGO REFERENTE AO MAPA 1
             if jogadorX >= 462:
                 jogadorX = 462
 
-            if jogadorX == chegadaX and jogadorY == chegadaY:
+            if jogador.colliderect(chegada):
                 jogadorX = 452
                 jogadorY = 25
 
@@ -475,14 +475,14 @@ while sair != True: #CÓDIGO REFERENTE AO MAPA 1
                     pygame.draw.line(janela, azul, [480,20], [480,480], espessura) # barra vertical direita
                     pygame.draw.line(janela, azul, [16,480], [484,480], espessura) # barra horizontal inferior
 
-                    for event in pygame.event.get(): # evento de fechar o jogo
-                        if event.type == pygame.QUIT:
+                    for event in pygame.event.get():
+                        if event.type == pygame.QUIT: # evento de fechar o jogo
                             sair = True
-                        if event.type == pygame.KEYDOWN: # evento das teclas
+                        if event.type == pygame.KEYDOWN: # evento de controle, movimentar o jogador
                             if event.key == pygame.K_LEFT:
                                 jogadorMudançaX = - velocidade
                             if event.key == pygame.K_RIGHT:
-                                jogadorMudançaX = velocidade
+                                jogadorMudançaX = velocidade   
                             if event.key == pygame.K_UP:
                                 jogadorMudançaY = - velocidade
                             if event.key == pygame.K_DOWN:
@@ -513,7 +513,7 @@ while sair != True: #CÓDIGO REFERENTE AO MAPA 1
                     if jogadorX >= 462:
                         jogadorX = 462
 
-                    if jogadorX == chegadaX and jogadorY == chegadaY:
+                    if jogador.colliderect(chegada):
                         jogadorX = 452
                         jogadorY = 25
 
@@ -524,13 +524,8 @@ while sair != True: #CÓDIGO REFERENTE AO MAPA 1
                             janela.fill(branco)
                             
                             desenharMapa(mapa4, 16, 16)
-                            
 
                             
-                            
-                            
-
-
                             pygame.draw.circle(janela, vermelho, (jogadorX, jogadorY), 8) # desenha meu jogador
 
                             pygame.draw.circle(janela, azul, (chegadaX, chegadaY), 8) # desenha minha chegada
@@ -540,14 +535,14 @@ while sair != True: #CÓDIGO REFERENTE AO MAPA 1
                             pygame.draw.line(janela, preto, [480,20], [480,480], espessura) # barra vertical direita
                             pygame.draw.line(janela, preto, [16,480], [484,480], espessura) # barra horizontal inferior
 
-                            for event in pygame.event.get(): # evento de fechar o jogo
-                                if event.type == pygame.QUIT:
+                            for event in pygame.event.get():
+                                if event.type == pygame.QUIT: # evento de fechar o jogo
                                     sair = True
-                                if event.type == pygame.KEYDOWN: # evento das teclas
+                                if event.type == pygame.KEYDOWN: # evento de controle, movimentar o jogador
                                     if event.key == pygame.K_LEFT:
                                         jogadorMudançaX = - velocidade
                                     if event.key == pygame.K_RIGHT:
-                                        jogadorMudançaX = velocidade
+                                        jogadorMudançaX = velocidade   
                                     if event.key == pygame.K_UP:
                                         jogadorMudançaY = - velocidade
                                     if event.key == pygame.K_DOWN:
@@ -583,15 +578,15 @@ while sair != True: #CÓDIGO REFERENTE AO MAPA 1
                                 jogadorY = 25
                                 sair = True
 
-                            pygame.display.flip() # atualiza a tela 
+                            pygame.display.flip()  
                             clock.tick(60)
 
 
-                    pygame.display.flip() # atualiza a tela 
+                    pygame.display.flip() 
                     clock.tick(60)
                 
 
-            pygame.display.flip() # atualiza a tela 
+            pygame.display.flip()  
             clock.tick(60)
 
 
