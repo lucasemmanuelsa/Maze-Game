@@ -36,8 +36,8 @@ azul = (72, 172, 240)
 rosa = (252, 24, 152)
 roxo = (27, 20, 100)
 
-def criarCanhão(x, y):
-    janela.blit(canhaoImagem, (x, y))
+def criarCanhão(imagem ,x, y):
+    janela.blit(imagem, (x, y))
 
 def criarCoracao(imagem, x, y):
     janela.blit(imagem, (x, y))
@@ -83,6 +83,11 @@ canhaoImagem = pygame.image.load(os.path.join(diretorio_imagens, 'canhao.png'))
 canhaoImagem = pygame.transform.scale(canhaoImagem, (24, 24))
 canhaoImagem = pygame.transform.flip(canhaoImagem, True, False)
 
+canhaoImagem2 = pygame.image.load(os.path.join(diretorio_imagens, 'canhao.png'))
+canhaoImagem2 = pygame.transform.scale(canhaoImagem2, (24, 24))
+canhaoImagem2 = pygame.transform.flip(canhaoImagem2, True, False)
+
+
 # posição do canhão 1
 canhao1X = 475
 canhao1Y = 100
@@ -91,6 +96,7 @@ canhao1Y = 100
 bala1X = canhao1X
 bala1Y = canhao1Y + 8
 bala1MudançaX = 0
+bala1MudançaY = 0
 tempoBala1 = randint(1,3)
 auxTempoBala1 = -tempoBala1
 
@@ -102,6 +108,7 @@ canhao2Y = 225
 bala2X = canhao2X
 bala2Y = canhao2Y + 8
 bala2MudançaX = 0
+bala2MudançaY = 0
 tempoBala2 = randint(1,3)
 auxTempoBala2 = -tempoBala2
 
@@ -113,6 +120,7 @@ canhao3Y = 350
 bala3X = canhao3X
 bala3Y = canhao3Y + 8
 bala3MudançaX = 0
+bala3MudançaY = 0
 tempoBala3 = randint(1,3)
 auxTempoBala3 = -tempoBala3
 
@@ -153,8 +161,8 @@ jogadorImagem = pygame.transform.scale(jogadorImagem, (14, 14))
 rectJogador = jogadorImagem.get_rect()
 
 # Posiçao do jogador
-jogadorX = 25 
-jogadorY = 25
+jogadorX = 438#25 
+jogadorY = 27#25
 jogadorMudançaX = 0
 jogadorMudançaY = 0
 # Velocidade do jogador
@@ -301,9 +309,9 @@ while sair != True: #CÓDIGO REFERENTE AO MAPA 1
     bala2X += bala2MudançaX
     bala3X += bala3MudançaX
     
-    criarCanhão(canhao1X, canhao1Y)
-    criarCanhão(canhao2X, canhao2Y)
-    criarCanhão(canhao3X, canhao3Y)
+    criarCanhão(canhaoImagem, canhao1X, canhao1Y)
+    criarCanhão(canhaoImagem, canhao2X, canhao2Y)
+    criarCanhão(canhaoImagem, canhao3X, canhao3Y)
 
     criarCoracao(coracaoImagem1, coracao1X, coracao1Y)
     criarCoracao(coracaoImagem2, coracao2X, coracao2Y)
@@ -372,13 +380,58 @@ while sair != True: #CÓDIGO REFERENTE AO MAPA 1
         jogadorY = 60
 
         chegadaX = 25
-        chegadaY = 25
+        chegadaY = 29
 
         velocidade = 2
 
+        canhaoImagem = pygame.transform.rotate(canhaoImagem, -90)
+
+        canhao1X = 100
+        canhao1Y = 475
+
+        canhao2X = 225
+        canhao2Y = 475
+
+        canhao3X = 350
+        canhao3Y = 475
+
+        canhao4X = 475
+        canhao4Y = 25
+
+        bala1X = canhao1X + 8
+        bala1Y = canhao1Y
+        bala1MudançaX = 0
+        bala1MudançaY = 0
+        tempoBala1 = randint(1,2)
+        auxTempoBala1 = -tempoBala1
+
+        bala2X = canhao2X + 8
+        bala2Y = canhao2Y
+        bala2MudançaX = 0
+        bala2MudançaY = 0
+        tempoBala2 = randint(1,2)
+        auxTempoBala2 = -tempoBala2
+
+        bala3X = canhao3X + 8
+        bala3Y = canhao3Y
+        bala3MudançaX = 0
+        bala3MudançaY = 0
+        tempoBala3 = randint(1,2)
+        auxTempoBala3 = -tempoBala3
+
+        bala4X = canhao4X
+        bala4Y = canhao4Y + 8
+        bala4MudançaX = 0
+        bala4MudançaY = 0
+        tempoBala4 = 3
+        auxTempoBala4 = -tempoBala4
+
+
+
+
         while sair != True: #Código do mapa 2
             janela.fill(preto)
-            
+            print(jogadorX, jogadorY)
             tempoMapa2 = int(pygame.time.get_ticks()/1000) - (tempoMapa1+9)
             cronometro = fonte.render('Tempo: ' + str(tempoMapa2), True, branco)
 
@@ -390,15 +443,29 @@ while sair != True: #CÓDIGO REFERENTE AO MAPA 1
 
             chegada = pygame.Rect(chegadaX, chegadaY, 14, 14)
 
+            bala1 = pygame.Rect(bala1X, bala1Y, 10, 10)
+            bala2 = pygame.Rect(bala2X, bala2Y, 10, 10)
+            bala3 = pygame.Rect(bala3X, bala3Y, 10, 10)
+            bala4 = pygame.Rect(bala4X, bala4Y, 10, 10)
 
             pygame.draw.rect(janela, vermelho, (jogador)) # desenha meu jogador
 
-            pygame.draw.rect(janela, verdelimao, (chegada)) # desenha minha chegada
+            pygame.draw.rect(janela, azul, (chegada)) # desenha minha chegada
             
+            pygame.draw.rect(janela, rosa, (bala1)) # desenha a bala do canhao 1
+            pygame.draw.rect(janela, rosa, (bala2)) # desenha a bala do canhao 2
+            pygame.draw.rect(janela, rosa, (bala3)) # desenha a bala do canhao 3
+            pygame.draw.rect(janela, rosa, (bala4)) # desenha a bala do canhao 4
+
             pygame.draw.line(janela, branco, [16,20], [484,20], espessura) # barra horizontal superior
             pygame.draw.line(janela, branco, [20,20], [20, 480], espessura) # barra na vertical esquerda
             pygame.draw.line(janela, branco, [480,20], [480,480], espessura) # barra vertical direita
             pygame.draw.line(janela, branco, [16,480], [484,480], espessura) # barra horizontal inferior
+
+            bala1Y += bala1MudançaY
+            bala2Y += bala2MudançaY
+            bala3Y += bala3MudançaY
+            bala4X += bala4MudançaX
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT: # evento de fechar o jogo
@@ -421,6 +488,16 @@ while sair != True: #CÓDIGO REFERENTE AO MAPA 1
             jogadorX += jogadorMudançaX
             jogadorY += jogadorMudançaY
 
+            bala1MudançaY = - velocidadeBala
+            bala2MudançaY = - velocidadeBala
+            bala3MudançaY = - velocidadeBala
+            bala4MudançaX = - velocidadeBala
+
+            criarCanhão(canhaoImagem, canhao1X, canhao1Y)
+            criarCanhão(canhaoImagem, canhao2X, canhao2Y)
+            criarCanhão(canhaoImagem, canhao3X, canhao3Y)
+            criarCanhão(canhaoImagem2, canhao4X, canhao4Y)
+
             criarCoracao(coracaoImagem1, coracao1X, coracao1Y)
             criarCoracao(coracaoImagem2, coracao2X, coracao2Y)
             criarCoracao(coracaoImagem3, coracao3X, coracao3Y)
@@ -432,11 +509,8 @@ while sair != True: #CÓDIGO REFERENTE AO MAPA 1
                 if pygame.Rect(jogadorX, jogadorY, 13, 13).collidepoint(lista2X[i], lista2Y[i]):
                     jogadorX -= jogadorMudançaX
                     jogadorY -= jogadorMudançaY
-                    
-                    
-
-
-            # Barreiras  #usar funçao 
+                            
+            # Barreiras
             if jogadorY <= 25:
                 jogadorY = 25
             if jogadorY >= 462:
@@ -446,7 +520,42 @@ while sair != True: #CÓDIGO REFERENTE AO MAPA 1
             if jogadorX >= 462:
                 jogadorX = 462
 
-            if jogador.colliderect(chegada):
+            if pygame.Rect(bala1X, bala1Y, 10, 10).collidepoint(bala1X, 0): #se a bala encostar na borda da janela do jogo a variavel auxiliar vai receber o tempo do jogo nesse exato momento
+                auxTempoBala1 = tempoMapa2
+            if auxTempoBala1 + tempoBala1 == tempoMapa2: # a bala vai ser disparada a cada tempo definido da bala (de 1 a 3) de forma aleatória
+                bala1Y = canhao1Y # a bala volta para a posição inicial
+                tempoBala1 = randint(1,2)
+            if pygame.Rect(bala2X, bala2Y, 10, 10).collidepoint(bala2X, 0):
+                auxTempoBala2 = tempoMapa2
+            if auxTempoBala2 + tempoBala2 == tempoMapa2:
+                bala2Y = canhao2Y
+                tempoBala2 = randint(1,2)
+            if pygame.Rect(bala3X, bala3Y, 10, 10).collidepoint(bala3X, 0):
+                auxTempoBala3 = tempoMapa2
+            if auxTempoBala3 + tempoBala3 == tempoMapa2:
+                bala3Y = canhao3Y
+                tempoBala3 = randint(1,2)
+            if pygame.Rect(bala4X, bala4Y, 10, 10).collidepoint(0, bala4Y):
+                auxTempoBala4 = tempoMapa2
+            if auxTempoBala4 + tempoBala4 == tempoMapa2:
+                bala4X = canhao4X
+            if jogador.colliderect(bala1) or jogador.colliderect(bala2) or jogador.colliderect(bala3) or jogador.colliderect(bala4):
+                time.sleep(1)
+                jogadorX = 25
+                jogadorY = 60
+                vida -= 1
+            if vida == 4:
+                coracaoImagem5.set_alpha(0)
+            elif vida == 3:
+                coracaoImagem4.set_alpha(0)
+            elif vida == 2:
+                coracaoImagem3.set_alpha(0)
+            elif vida == 1:
+                coracaoImagem2.set_alpha(0)
+            if vida == 0:
+                sair = True
+
+            if jogador.colliderect(chegada): #passar de mapa
                 jogadorX = 452
                 jogadorY = 25
 
