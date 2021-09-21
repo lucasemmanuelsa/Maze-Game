@@ -1,7 +1,6 @@
-import time
-import pygame
-import os
+import time, pygame, os, sys
 from random import randint
+
 
 # inicializa todos os módulos que necessitam de inicialização dentro do pygame.
 pygame.init()
@@ -169,8 +168,6 @@ espessura = 9
 # criando a variavel para armazenar o tempo
 tempoMapa1 = 0 
 #Menu do jogo ---------------------------------------------------------------------------------------
-import pygame , sys
-pygame.init()
 
 def menu (janela,wallpaper):
     pygame.font.init()
@@ -179,12 +176,12 @@ def menu (janela,wallpaper):
     ContadorLetras  = 4
 
     def wallpaper_changer (num_wallpaper):
-        fundo = pygame.image.load('menu_labirinto/wallpaper{}.png'.format(num_wallpaper))
+        fundo = pygame.image.load(os.path.join(diretorio_imagens, 'wallpaper{}.png'.format(num_wallpaper)))
         return fundo
 
     while janela != 0:
         janela.blit (wallpaper_changer(wallpaper),(0,0))
-        pygame.time.delay(60)
+        pygame.time.delay(150)
 
         for event in pygame.event.get ():
             if event.type == pygame.QUIT:
