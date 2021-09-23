@@ -50,6 +50,13 @@ def drawBarreirasLimitadoras(cor):
     pygame.draw.line(janela, cor, [480,20], [480,480], espessura) # barra vertical direita
     pygame.draw.line(janela, cor, [16,480], [484,480], espessura) # barra horizontal inferior
 
+def drawCoracaoHud():
+    criarCoracao(coracaoImagem1, coracao1X, coracao1Y)
+    criarCoracao(coracaoImagem2, coracao2X, coracao2Y)
+    criarCoracao(coracaoImagem3, coracao3X, coracao3Y)
+    criarCoracao(coracaoImagem4, coracao4X, coracao4Y)
+    criarCoracao(coracaoImagem5, coracao5X, coracao5Y)
+
 # Carregando fonte do jogo
 fonte = pygame.font.Font('Gamer.ttf', 55)
 
@@ -162,8 +169,8 @@ jogadorImagem = pygame.transform.scale(jogadorImagem, (14, 14))
 rectJogador = jogadorImagem.get_rect()
 
 # Posiçao do jogador
-jogadorX = 438 #25
-jogadorY = 27 #25
+jogadorX = 25 #438
+jogadorY = 25 #27
 jogadorMudançaX = 0
 jogadorMudançaY = 0
 # Velocidade do jogador
@@ -323,18 +330,18 @@ while sair != True: #CÓDIGO REFERENTE AO MAPA 1
         if event.type == pygame.QUIT: # evento de fechar o jogo
             sair = True
         if event.type == pygame.KEYDOWN: # evento de controle, movimentar o jogador
-            if event.key == pygame.K_LEFT:
+            if event.key == pygame.K_LEFT or event.key == pygame.K_a:
                 jogadorMudançaX = - velocidade
-            if event.key == pygame.K_RIGHT:
+            if event.key == pygame.K_RIGHT or event.key == pygame.K_d:
                 jogadorMudançaX = velocidade   
-            if event.key == pygame.K_UP:
+            if event.key == pygame.K_UP or event.key == pygame.K_w:
                 jogadorMudançaY = - velocidade
-            if event.key == pygame.K_DOWN:
+            if event.key == pygame.K_DOWN or event.key == pygame.K_s:
                 jogadorMudançaY = velocidade
         if event.type == pygame.KEYUP:
-            if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
+            if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT or event.key == pygame.K_a or event.key == pygame.K_d:
                 jogadorMudançaX = 0
-            if event.key == pygame.K_UP or event.key == pygame.K_DOWN:
+            if event.key == pygame.K_UP or event.key == pygame.K_DOWN or event.key == pygame.K_w or event.key == pygame.K_s:
                 jogadorMudançaY = 0
     
     jogadorX += jogadorMudançaX
@@ -345,11 +352,7 @@ while sair != True: #CÓDIGO REFERENTE AO MAPA 1
     criarCanhão(canhaoImagem, canhao2X, canhao2Y)
     criarCanhão(canhaoImagem, canhao3X, canhao3Y)
 
-    criarCoracao(coracaoImagem1, coracao1X, coracao1Y)
-    criarCoracao(coracaoImagem2, coracao2X, coracao2Y)
-    criarCoracao(coracaoImagem3, coracao3X, coracao3Y)
-    criarCoracao(coracaoImagem4, coracao4X, coracao4Y)
-    criarCoracao(coracaoImagem5, coracao5X, coracao5Y)
+    drawCoracaoHud()
 
     
     if pygame.Rect(bala1X, bala1Y, 10, 10).collidepoint(0, bala1Y): #se a bala encostar na borda da janela do jogo a variavel auxiliar vai receber o tempo do jogo nesse exato momento
@@ -410,7 +413,7 @@ while sair != True: #CÓDIGO REFERENTE AO MAPA 1
         time.sleep(5)
         #-----------------------------------------------------
         jogadorX = 25
-        jogadorY = 29#60
+        jogadorY = 60 #29 para pular o mapa
 
         chegadaX = 25
         chegadaY = 29
@@ -503,18 +506,18 @@ while sair != True: #CÓDIGO REFERENTE AO MAPA 1
                 if event.type == pygame.QUIT: # evento de fechar o jogo
                     sair = True
                 if event.type == pygame.KEYDOWN: # evento de controle, movimentar o jogador
-                    if event.key == pygame.K_LEFT:
+                    if event.key == pygame.K_LEFT or event.key == pygame.K_a:
                         jogadorMudançaX = - velocidade
-                    if event.key == pygame.K_RIGHT:
+                    if event.key == pygame.K_RIGHT or event.key == pygame.K_d:
                         jogadorMudançaX = velocidade   
-                    if event.key == pygame.K_UP:
+                    if event.key == pygame.K_UP or event.key == pygame.K_w:
                         jogadorMudançaY = - velocidade
-                    if event.key == pygame.K_DOWN:
+                    if event.key == pygame.K_DOWN or event.key == pygame.K_s:
                         jogadorMudançaY = velocidade
                 if event.type == pygame.KEYUP:
-                    if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
+                    if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT or event.key == pygame.K_a or event.key == pygame.K_d:
                         jogadorMudançaX = 0
-                    if event.key == pygame.K_UP or event.key == pygame.K_DOWN:
+                    if event.key == pygame.K_UP or event.key == pygame.K_DOWN or event.key == pygame.K_w or event.key == pygame.K_s:
                         jogadorMudançaY = 0
             
             jogadorX += jogadorMudançaX
@@ -526,11 +529,7 @@ while sair != True: #CÓDIGO REFERENTE AO MAPA 1
             criarCanhão(canhaoImagem, canhao3X, canhao3Y)
             criarCanhão(canhaoImagem2, canhao4X, canhao4Y)
 
-            criarCoracao(coracaoImagem1, coracao1X, coracao1Y)
-            criarCoracao(coracaoImagem2, coracao2X, coracao2Y)
-            criarCoracao(coracaoImagem3, coracao3X, coracao3Y)
-            criarCoracao(coracaoImagem4, coracao4X, coracao4Y)
-            criarCoracao(coracaoImagem5, coracao5X, coracao5Y)
+            drawCoracaoHud()
 
             # colisao com as paredes
             for i in range(len(lista2X)):
@@ -719,18 +718,18 @@ while sair != True: #CÓDIGO REFERENTE AO MAPA 1
                         if event.type == pygame.QUIT: # evento de fechar o jogo
                             sair = True
                         if event.type == pygame.KEYDOWN: # evento de controle, movimentar o jogador
-                            if event.key == pygame.K_LEFT:
+                            if event.key == pygame.K_LEFT or event.key == pygame.K_a:
                                 jogadorMudançaX = - velocidade
-                            if event.key == pygame.K_RIGHT:
+                            if event.key == pygame.K_RIGHT or event.key == pygame.K_d:
                                 jogadorMudançaX = velocidade   
-                            if event.key == pygame.K_UP:
+                            if event.key == pygame.K_UP or event.key == pygame.K_w:
                                 jogadorMudançaY = - velocidade
-                            if event.key == pygame.K_DOWN:
+                            if event.key == pygame.K_DOWN or event.key == pygame.K_s:
                                 jogadorMudançaY = velocidade
                         if event.type == pygame.KEYUP:
-                            if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
+                            if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT or event.key == pygame.K_a or event.key == pygame.K_d:
                                 jogadorMudançaX = 0
-                            if event.key == pygame.K_UP or event.key == pygame.K_DOWN:
+                            if event.key == pygame.K_UP or event.key == pygame.K_DOWN or event.key == pygame.K_w or event.key == pygame.K_s:
                                 jogadorMudançaY = 0
                     
                     jogadorX += jogadorMudançaX
@@ -743,11 +742,7 @@ while sair != True: #CÓDIGO REFERENTE AO MAPA 1
                     criarCanhão(canhaoImagem3, canhao5X, canhao5Y)
                     criarCanhão(canhaoImagem2, canhao6X, canhao6Y)
 
-                    criarCoracao(coracaoImagem1, coracao1X, coracao1Y)
-                    criarCoracao(coracaoImagem2, coracao2X, coracao2Y)
-                    criarCoracao(coracaoImagem3, coracao3X, coracao3Y)
-                    criarCoracao(coracaoImagem4, coracao4X, coracao4Y)
-                    criarCoracao(coracaoImagem5, coracao5X, coracao5Y)
+                    drawCoracaoHud()
 
                     # colisao com as paredes
                     for i in range(len(lista3X)):
@@ -824,15 +819,11 @@ while sair != True: #CÓDIGO REFERENTE AO MAPA 1
                     if chegadaX == 25 and chegadaY == 25 and jogador.colliderect(pygame.Rect(25,25, 12,12)):
                         sair = True
 
-
-
                     pygame.display.flip() 
                     clock.tick(60)
                 
-
             pygame.display.flip()  
             clock.tick(60)
-
 
     pygame.display.flip() # atualiza a tela 
     clock.tick(60)
