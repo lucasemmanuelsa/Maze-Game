@@ -41,11 +41,23 @@ icone = pygame.image.load(os.path.join(diretorio_imagens, 'lab.png')) # imagem d
 pygame.display.set_icon(icone)
 
 # Carregando sons
-musicatema = pygame.mixer.music.load(os.path.join(diretorio_sons, 'Thememusic.wav'))
-# nextlvlsound = pygame.mixer.Sound(os.path.join(diretorio_sons, 'sound1.mp3')) APAGAR DPS
-
+musicatema = pygame.mixer.music.load(os.path.join(diretorio_sons, 'enter.mp3'))
 pygame.mixer.music.set_volume(0.08)
 pygame.mixer.music.play(-1)
+
+somtiro = pygame.mixer.Sound(os.path.join(diretorio_sons, 'tiro1.mp3'))
+somtiro.set_volume(0.1)
+
+somDano = pygame.mixer.Sound(os.path.join(diretorio_sons, 'dano.mp3'))
+
+somGameOver = pygame.mixer.Sound(os.path.join(diretorio_sons, 'somGameOver.mp3'))
+
+somClick = pygame.mixer.Sound(os.path.join(diretorio_sons, 'click.mp3'))
+somClick.set_volume(0.1)
+
+somChegada = pygame.mixer.Sound(os.path.join(diretorio_sons, 'somchegada.mp3'))
+somChegada.set_volume(0.1)
+
 
 # Definindo cores
 preto = (0,0,0)
@@ -436,6 +448,9 @@ mapa2 = pygame.transform.scale(mapa2, (520, 460))
 mapa3 = pygame.image.load(os.path.join(diretorio_imagens, 'mapa3.png'))
 mapa3 = pygame.transform.scale(mapa3, (465, 465))
 
+# imagem da tela de game over
+gameoverImagem = pygame.image.load(os.path.join(diretorio_imagens, 'Game_Over.png'))
+
 
 # Posição da chegada
 chegadaX = 438
@@ -486,6 +501,7 @@ def menu (janela,wallpaper):
 
             if event.type == pygame.KEYDOWN and wallpaper == 3 and ContadorLetras > 0:
                 strJogador = strJogador.upper()
+                somClick.play()
 
                 if event.key == pygame.K_BACKSPACE:
                     strJogador = strJogador[:-1]
@@ -499,6 +515,7 @@ def menu (janela,wallpaper):
                 elif event.key == pygame.K_SPACE and len(strJogador) == 3:
                     nome = strJogador #Inserindo o nome do jogador na variável nome
                     return strJogador 
+                
                     
                     
 
@@ -521,14 +538,17 @@ def menu (janela,wallpaper):
 menu(janela,0)
 #-----------------------------------------------------------------------------------------
 janela.fill(preto)  # pinta a cor do fundo
-
+pygame.mixer.music.stop()
+musicatema = pygame.mixer.music.load(os.path.join(diretorio_sons, 'Map1Song.mp3'))
+pygame.mixer.music.set_volume(0.08)
+pygame.mixer.music.play(-1)
 # texto 'Nível 1' antes de começar o jogo
 texto = fonte.render('Nível 1', True, vermelho)
 
 janela.blit(texto, (180, 215))
 
 pygame.display.flip()
-time.sleep(3) 
+time.sleep(4.5) 
 #-----------------------------------------------------------------------------------------------------
 listaX = []
 listaY = []
@@ -572,8 +592,8 @@ for x in range(500):
 
 #------------------------------------------------------------------------------------------------------
 sair = False
+somtiro.play()
 while sair != True: #CÓDIGO REFERENTE AO MAPA 1
-    
     tempoMapa1 = int(pygame.time.get_ticks()/1000) - 3 # contagem do tempo
     
 
@@ -647,17 +667,21 @@ while sair != True: #CÓDIGO REFERENTE AO MAPA 1
     if auxTempoBala1 + tempoBala1 == tempoMapa1: # a bala vai ser disparada a cada tempo definido da bala (de 1 a 3) de forma aleatória
         bala1X = canhao1X # a bala volta para a posição inicial
         tempoBala1 = randint(1,3)
+        somtiro.play()
     if pygame.Rect(bala2X, bala2Y, 10, 10).collidepoint(0, bala2Y):
         auxTempoBala2 = tempoMapa1
     if auxTempoBala2 + tempoBala2 == tempoMapa1:
         bala2X = canhao2X
         tempoBala2 = randint(1,3)
+        somtiro.play()
     if pygame.Rect(bala3X, bala3Y, 10, 10).collidepoint(0, bala3Y):
         auxTempoBala3 = tempoMapa1
     if auxTempoBala3 + tempoBala3 == tempoMapa1:
         bala3X = canhao3X
         tempoBala3 = randint(1,3)
+        somtiro.play()
     if jogador.colliderect(bala1) or jogador.colliderect(bala2) or jogador.colliderect(bala3):
+        somDano.play()
         time.sleep(1)
         jogadorX = 25
         jogadorY = 25
@@ -671,6 +695,12 @@ while sair != True: #CÓDIGO REFERENTE AO MAPA 1
     elif vida == 1:
         coracaoImagem2.set_alpha(0)
     if vida == 0:
+        somGameOver.play()
+        janela.fill(preto)
+        pygame.mixer.music.stop()
+        janela.blit(gameoverImagem, (0,0))
+        pygame.display.flip()
+        time.sleep(8)
         sair = True
         
     # Colisão com as paredes
@@ -691,11 +721,17 @@ while sair != True: #CÓDIGO REFERENTE AO MAPA 1
         jogadorX = 462
 
     if jogador.colliderect(chegada):
+        somChegada.play()
         pontos = tempoMapa1
         
         #-----------------------------------------------------
         # Tela antes do próximo mapa
         janela.fill(preto)
+
+        musicatema = pygame.mixer.music.load(os.path.join(diretorio_sons, 'Map2Song.mp3'))
+        pygame.mixer.music.set_volume(0.08)
+        pygame.mixer.music.play(-1)
+
         texto2 = fonte.render('Nível 2', True, vermelho)
         janela.blit(texto2, (180, 215))
         pygame.display.flip()
@@ -750,6 +786,8 @@ while sair != True: #CÓDIGO REFERENTE AO MAPA 1
         bala4MudançaY = 0
         tempoBala4 = 3
         auxTempoBala4 = -tempoBala4
+
+        somtiro.play()
 #-------------------------------------------------------------------------------------------------------------------------------------
         while sair != True: #Código do mapa 2
             janela.fill(preto)
@@ -842,21 +880,26 @@ while sair != True: #CÓDIGO REFERENTE AO MAPA 1
             if auxTempoBala1 + tempoBala1 == tempoMapa2: # a bala vai ser disparada a cada tempo definido da bala (de 1 a 3) de forma aleatória
                 bala1Y = canhao1Y # a bala volta para a posição inicial
                 tempoBala1 = randint(1,2)
+                somtiro.play()
             if pygame.Rect(bala2X, bala2Y, 10, 10).collidepoint(bala2X, 0):
                 auxTempoBala2 = tempoMapa2
             if auxTempoBala2 + tempoBala2 == tempoMapa2:
                 bala2Y = canhao2Y
                 tempoBala2 = randint(1,2)
+                somtiro.play()
             if pygame.Rect(bala3X, bala3Y, 10, 10).collidepoint(bala3X, 0):
                 auxTempoBala3 = tempoMapa2
             if auxTempoBala3 + tempoBala3 == tempoMapa2:
                 bala3Y = canhao3Y
                 tempoBala3 = randint(1,2)
+                somtiro.play()
             if pygame.Rect(bala4X, bala4Y, 10, 10).collidepoint(0, bala4Y):
                 auxTempoBala4 = tempoMapa2
             if auxTempoBala4 + tempoBala4 == tempoMapa2:
-                bala4X = canhao4X
+                bala4X = canhao4X #nao tem variavel tempoBala4 por ser um canhao com um padrão definido de tempo, capaz do jogador prever
+                somtiro.play()
             if jogador.colliderect(bala1) or jogador.colliderect(bala2) or jogador.colliderect(bala3) or jogador.colliderect(bala4):
+                somDano.play()
                 time.sleep(1)
                 jogadorX = 25
                 jogadorY = 60
@@ -870,17 +913,27 @@ while sair != True: #CÓDIGO REFERENTE AO MAPA 1
             elif vida == 1:
                 coracaoImagem2.set_alpha(0)
             if vida == 0:
+                somGameOver.play()
+                janela.fill(preto)
+                pygame.mixer.music.stop()
+                janela.blit(gameoverImagem, (0,0))
+                pygame.display.flip()
+                time.sleep(8)
                 sair = True
 
             if jogador.colliderect(chegada): #passa de mapa
+                somChegada.play()
                 pontos += tempoMapa2 # tempoMapa1 + tempoMapa2
                 #-----------------------------------------------------
+                musicatema = pygame.mixer.music.load(os.path.join(diretorio_sons, 'Map3Song.mp3'))
+                pygame.mixer.music.set_volume(0.08)
+                pygame.mixer.music.play(-1)
                 # Tela antes do próximo mapa
                 janela.fill(preto)
                 texto3 = fonte.render('Nível 3', True, vermelho)
                 janela.blit(texto3, (180, 215))
                 pygame.display.flip()
-                time.sleep(3) 
+                time.sleep(4) 
                 #-----------------------------------------------------
                 jogadorX = 462 #462 (Padrão)
                 jogadorY = 25 #25 (Padrão)
@@ -952,6 +1005,8 @@ while sair != True: #CÓDIGO REFERENTE AO MAPA 1
                 bala6MudançaY = 0
                 tempoBala6 = randint(1,2)
                 auxTempoBala6 = -tempoBala6
+
+                somtiro.play()
 
                 mudouChegada = False
                 while sair != True: #Código do mapa 3
@@ -1057,32 +1112,39 @@ while sair != True: #CÓDIGO REFERENTE AO MAPA 1
                     if auxTempoBala1 + tempoBala1 == tempoMapa3: # a bala vai ser disparada a cada tempo definido da bala (de 1 a 3) de forma aleatória
                         bala1X = canhao1X # a bala volta para a posição inicial
                         tempoBala1 = randint(1,3)
+                        somtiro.play()
                     if pygame.Rect(bala2X, bala2Y, 10, 10).collidepoint(0, bala2Y):
                         auxTempoBala2 = tempoMapa3
                     if auxTempoBala2 + tempoBala2 == tempoMapa3:
                         bala2X = canhao2X
                         tempoBala2 = randint(1,3)
+                        somtiro.play()
                     if pygame.Rect(bala3X, bala3Y, 10, 10).collidepoint(0, bala3Y):
                         auxTempoBala3 = tempoMapa3
                     if auxTempoBala3 + tempoBala3 == tempoMapa3:
                         bala3X = canhao3X
                         tempoBala3 = randint(1,3)
+                        somtiro.play()
                     if pygame.Rect(bala4X, bala4Y, 10, 10).collidepoint(500, bala4Y):
                         auxTempoBala4 = tempoMapa3
                     if auxTempoBala4 + tempoBala4 == tempoMapa3:
                         bala4X = canhao4X + 8
                         tempoBala4 = randint(1,3)
+                        somtiro.play()
                     if pygame.Rect(bala5X, bala5Y, 10, 10).collidepoint(500, bala5Y):
                         auxTempoBala5 = tempoMapa3
                     if auxTempoBala5 + tempoBala5 == tempoMapa3:
                         bala5X = canhao5X + 8
                         tempoBala5 = randint(1,3)
+                        somtiro.play()
                     if pygame.Rect(bala6X, bala6Y, 10, 10).collidepoint(bala6X, 0):
                         auxTempoBala6 = tempoMapa3
                     if auxTempoBala6 + tempoBala6 == tempoMapa3:
                         bala6Y = canhao6Y
                         tempoBala6 = randint(1,3)
+                        somtiro.play()
                     if jogador.colliderect(bala1) or jogador.colliderect(bala2) or jogador.colliderect(bala3) or jogador.colliderect(bala4) or jogador.colliderect(bala5) or jogador.colliderect(bala6):
+                        somDano.play()
                         time.sleep(1)
                         jogadorX = 462
                         jogadorY = 25
@@ -1100,9 +1162,16 @@ while sair != True: #CÓDIGO REFERENTE AO MAPA 1
                     elif vida == 1:
                         coracaoImagem2.set_alpha(0)
                     if vida == 0:
+                        somGameOver.play()
+                        janela.fill(preto)
+                        pygame.mixer.music.stop()
+                        janela.blit(gameoverImagem, (0,0))
+                        pygame.display.flip()
+                        time.sleep(8)
                         sair = True
 
                     if jogador.colliderect(chegada):
+                        somChegada.play()
                         chegadaX = 25
                         chegadaY = 25
                         pontos += tempoBala3 #tempoMapa1 + tempoMapa2 + tempoMapa3
