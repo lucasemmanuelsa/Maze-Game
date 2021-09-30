@@ -15,11 +15,6 @@ cursor = banco_de_dados.cursor() #Objeto que vai permitir realizar alterações 
 itens1 = itens2.copy()
 banco_de_dados.commit()
 
-
-#Condição para o código não quebrar quando ele for aberto pela primeira vez:
-if itens1 == []:
-    pass
-
 # Criar a janela
 janela = pygame.display.set_mode((500, 550))
 
@@ -133,14 +128,14 @@ def tela_rank(largura_janela,altura_janela):
     janela_rank = pygame.display.set_mode((largura_janela, altura_janela))
     fonte_ranking = pygame.font.Font('Gamer.ttf', 80)
     fonte_ranking2 = pygame.font.Font('Gamer.ttf', 40)
-    while True:
+    sair = False
+    while sair == False:
         mensagem_ranking = "HIGH SCORES"
         texto_ranking = fonte_ranking.render(mensagem_ranking,True,(vermelho))
         
         for event in pygame.event.get():
             if event.type == QUIT:
-                pygame.quit()
-                exit()    
+                sair = True   
 
             #Verifando se houve clique no botão Continuar:
             if event.type == pygame.MOUSEBUTTONDOWN:
@@ -149,8 +144,7 @@ def tela_rank(largura_janela,altura_janela):
 
                 #Verificando se houve clique no botão Sair:
                 if x > 170 and y > 510 and x < 330 and y < 540:
-                    pygame.quit()
-                    exit()
+                    sair = True 
 
                 """ if x > 30 and y > 510 and x < 190 and y < 540:
                     pass """ #Rever
@@ -1189,8 +1183,9 @@ while sair != True: #CÓDIGO REFERENTE AO MAPA 1
                         #Inserindo pontuação e nome no banco de dados:
                         cursor.execute("INSERT INTO nomes_pontos VALUES("+str(pontos)+",'"+nome+"')")
                         cursor.execute("SELECT rowid, * FROM nomes_pontos ORDER BY Score LIMIT 10")
+                        itens2 = cursor.fetchmany(10)
+                        itens1 = itens2.copy()
                         banco_de_dados.commit() #Aplicando alterações no banco de dados.
-                        print(itens1)
                         banco_de_dados.close()
                         tela_rank(largura_janela,altura_janela)
 
