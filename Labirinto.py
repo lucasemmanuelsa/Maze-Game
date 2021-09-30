@@ -36,7 +36,7 @@ diretorio_imagens = os.path.join(diretorio_principal, 'imagens')
 diretorio_sons = os.path.join(diretorio_principal, 'sons')
 
 # Mudar o título do jogo
-pygame.display.set_caption('Labirinto')
+pygame.display.set_caption('Maze and Cannons')
 icone = pygame.image.load(os.path.join(diretorio_imagens, 'lab.png')) # imagem deve estar no diretório onde se encontra o programa
 pygame.display.set_icon(icone)
 
@@ -525,11 +525,11 @@ def menu (janela,wallpaper):
         text_surface = fonte_base.render(strJogador,True,(255,255,255))
         comando = pygame.key.get_pressed()
 
-        if   wallpaper == 0 and comando[pygame.K_SPACE] : wallpaper = 1
-        elif wallpaper == 1 and comando[pygame.K_UP]    : wallpaper = 3
-        elif wallpaper == 1 and comando[pygame.K_SPACE] : wallpaper = 1
-        elif wallpaper == 1 and comando[pygame.K_DOWN]  : wallpaper = 2
-        elif wallpaper == 2 and comando[pygame.K_SPACE] : wallpaper = 1
+        if   wallpaper == 0 and comando[pygame.K_SPACE] : wallpaper = 1; somClick.play()
+        elif wallpaper == 1 and comando[pygame.K_UP]    : wallpaper = 3; somClick.play()
+        elif wallpaper == 1 and comando[pygame.K_SPACE] : wallpaper = 1; somClick.play()
+        elif wallpaper == 1 and comando[pygame.K_DOWN]  : wallpaper = 2; somClick.play()
+        elif wallpaper == 2 and comando[pygame.K_SPACE] : wallpaper = 1; somClick.play()
         elif wallpaper == 3                             : janela.blit(text_surface,(160,185))
 
         pygame.display.update()
@@ -593,8 +593,9 @@ for x in range(500):
 #------------------------------------------------------------------------------------------------------
 sair = False
 somtiro.play()
+tempoAtual = int(pygame.time.get_ticks()/1000)
 while sair != True: #CÓDIGO REFERENTE AO MAPA 1
-    tempoMapa1 = int(pygame.time.get_ticks()/1000) - 3 # contagem do tempo
+    tempoMapa1 = int(pygame.time.get_ticks()/1000) - tempoAtual # contagem do tempo
     
 
     janela.fill(preto) # pinta a janela de preto novamente
@@ -787,12 +788,12 @@ while sair != True: #CÓDIGO REFERENTE AO MAPA 1
         tempoBala4 = 3
         auxTempoBala4 = -tempoBala4
 
-        somtiro.play()
+        tempoAtual = int(pygame.time.get_ticks()/1000)
 #-------------------------------------------------------------------------------------------------------------------------------------
         while sair != True: #Código do mapa 2
             janela.fill(preto)
 
-            tempoMapa2 = int(pygame.time.get_ticks()/1000) - (tempoMapa1 + 9)
+            tempoMapa2 = int(pygame.time.get_ticks()/1000) - tempoAtual
             cronometro = fonte.render('Tempo: ' + str(tempoMapa2), True, branco)
             
 
@@ -897,6 +898,7 @@ while sair != True: #CÓDIGO REFERENTE AO MAPA 1
                 auxTempoBala4 = tempoMapa2
             if auxTempoBala4 + tempoBala4 == tempoMapa2:
                 bala4X = canhao4X #nao tem variavel tempoBala4 por ser um canhao com um padrão definido de tempo, capaz do jogador prever
+                tempoBala4 = randint(3,4)
                 somtiro.play()
             if jogador.colliderect(bala1) or jogador.colliderect(bala2) or jogador.colliderect(bala3) or jogador.colliderect(bala4):
                 somDano.play()
@@ -935,8 +937,8 @@ while sair != True: #CÓDIGO REFERENTE AO MAPA 1
                 pygame.display.flip()
                 time.sleep(4) 
                 #-----------------------------------------------------
-                jogadorX = 462 #462 (Padrão)
-                jogadorY = 25 #25 (Padrão)
+                jogadorX = 462 #462
+                jogadorY = 25 #25
 
                 chegadaX = 462
                 chegadaY = 462
@@ -1009,10 +1011,12 @@ while sair != True: #CÓDIGO REFERENTE AO MAPA 1
                 somtiro.play()
 
                 mudouChegada = False
+
+                tempoAtual = int(pygame.time.get_ticks()/1000)
                 while sair != True: #Código do mapa 3
                     janela.fill(preto)
 
-                    tempoMapa3 = int(pygame.time.get_ticks()/1000) - (tempoMapa2 + 21)
+                    tempoMapa3 = int(pygame.time.get_ticks()/1000) - (tempoAtual)
                     cronometro = fonte.render('Tempo: ' + str(tempoMapa3), True, branco)
 
                     janela.blit(cronometro, (285, 490))
@@ -1174,7 +1178,10 @@ while sair != True: #CÓDIGO REFERENTE AO MAPA 1
                         somChegada.play()
                         chegadaX = 25
                         chegadaY = 25
-                        pontos += tempoBala3 #tempoMapa1 + tempoMapa2 + tempoMapa3
+                        mudouChegada = True 
+                        
+                    if chegadaX == 25 and chegadaY == 25 and jogador.colliderect(pygame.Rect(25,25, 12,12)):
+                        pontos = tempoMapa1 + tempoMapa2 + tempoMapa3
 
                         #Inserindo pontuação e nome no banco de dados:
                         cursor.execute("INSERT INTO nomes_pontos VALUES("+str(pontos)+",'"+nome+"')")
@@ -1183,10 +1190,6 @@ while sair != True: #CÓDIGO REFERENTE AO MAPA 1
                         print(itens1)
                         banco_de_dados.close()
                         tela_rank(largura_janela,altura_janela)
-                        mudouChegada = True 
-                        
-                    if chegadaX == 25 and chegadaY == 25 and jogador.colliderect(pygame.Rect(25,25, 12,12)):
-                        sair = True
 
                     pygame.display.flip() 
                     clock.tick(60)
