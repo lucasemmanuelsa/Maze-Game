@@ -503,7 +503,7 @@ def menu (janela,wallpaper):
                 strJogador = strJogador.upper()
                 somClick.play()
                 
-                if len(strJogador) == 0 and event. key == pygame.k_BACKSPACE:
+                if len(strJogador) == 0 and event.key == pygame.K_BACKSPACE:
                     strJogador = ''
 
                 elif event.key == pygame.K_BACKSPACE:
