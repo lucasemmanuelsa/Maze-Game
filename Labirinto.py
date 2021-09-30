@@ -502,8 +502,11 @@ def menu (janela,wallpaper):
             if event.type == pygame.KEYDOWN and wallpaper == 3 and ContadorLetras > 0:
                 strJogador = strJogador.upper()
                 somClick.play()
+                
+                if len(strJogador) == 0 and event. key == pygame.k_BACKSPACE:
+                    strJogador = ''
 
-                if event.key == pygame.K_BACKSPACE:
+                elif event.key == pygame.K_BACKSPACE:
                     strJogador = strJogador[:-1]
                     ContadorLetras += 1
 
