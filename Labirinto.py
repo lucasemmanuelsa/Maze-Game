@@ -470,7 +470,35 @@ espessura = 9
 
 # criando a variavel para armazenar o tempo
 tempoMapa1 = 0 
+#Tela da logo ---------------------------------------------------------------------------------------
+pretoImagem = pygame.image.load(os.path.join(diretorio_imagens, 'preto.png'))
+pretoImagem = pygame.transform.scale(pretoImagem, (500,550))
+pretoImagem.set_alpha(0)
+janela.fill(preto)
+logoImagem = pygame.image.load(os.path.join(diretorio_imagens, 'logofinal1.png')).convert()
+logoImagem.set_alpha(0)
 
+for i in range(255): #fadein
+    pygame.time.delay(20)
+    logoImagem.set_alpha(i)
+    janela.blit(logoImagem, (0,0))
+    pygame.display.flip()
+
+for i in range(255): #fadeout
+    pygame.time.delay(3)
+    pretoImagem.set_alpha(i)
+    janela.blit(pretoImagem, (0,0))
+    pygame.display.flip()
+
+informacaoImagem = pygame.image.load(os.path.join(diretorio_imagens, 'whiletrue.png'))
+informacaoImagem.set_alpha(0)
+for k in range(255): #fadein da segunda imagem
+    pygame.time.delay(30)
+    informacaoImagem.set_alpha(k)
+    janela.blit(informacaoImagem, (0,0))
+    pygame.display.flip()
+pygame.display.flip()
+pygame.time.delay(100)
 #Menu do jogo ---------------------------------------------------------------------------------------
 
 def menu (janela,wallpaper):
@@ -511,13 +539,7 @@ def menu (janela,wallpaper):
 
                 elif event.key == pygame.K_SPACE and len(strJogador) == 3:
                     nome = strJogador #Inserindo o nome do jogador na variável nome
-                    return strJogador 
-                
-                    
-                    
-
-                    
-                    
+                    return strJogador       
         
         text_surface = fonte_base.render(strJogador,True,(255,255,255))
         comando = pygame.key.get_pressed()
@@ -540,9 +562,8 @@ musicatema = pygame.mixer.music.load(os.path.join(diretorio_sons, 'Map1Song.mp3'
 pygame.mixer.music.set_volume(0.08)
 pygame.mixer.music.play(-1)
 # texto 'Nível 1' antes de começar o jogo
-texto = fonte.render('Nível 1', True, vermelho)
-
-janela.blit(texto, (180, 215))
+NomeNivel1 = pygame.image.load(os.path.join(diretorio_imagens, 'nivel1.png'))
+janela.blit(NomeNivel1, (0,0))
 
 pygame.display.flip()
 time.sleep(4.5) 
@@ -730,10 +751,10 @@ while sair != True: #CÓDIGO REFERENTE AO MAPA 1
         pygame.mixer.music.set_volume(0.08)
         pygame.mixer.music.play(-1)
 
-        texto2 = fonte.render('Nível 2', True, vermelho)
-        janela.blit(texto2, (180, 215))
+        NomeNivel2 = pygame.image.load(os.path.join(diretorio_imagens, 'nivel2.png'))
+        janela.blit(NomeNivel2, (0,0))
         pygame.display.flip()
-        time.sleep(3) 
+        time.sleep(6) 
         #-----------------------------------------------------
         jogadorX = 25 #25 (Padrão)
         jogadorY = 60 #29 para pular o mapa 60 (Padrão)
@@ -761,21 +782,21 @@ while sair != True: #CÓDIGO REFERENTE AO MAPA 1
         bala1Y = canhao1Y
         bala1MudançaX = 0
         bala1MudançaY = 0
-        tempoBala1 = randint(1,2)
+        tempoBala1 = randint(1,3)
         auxTempoBala1 = -tempoBala1
 
         bala2X = canhao2X + 8
         bala2Y = canhao2Y
         bala2MudançaX = 0
         bala2MudançaY = 0
-        tempoBala2 = randint(1,2)
+        tempoBala2 = randint(1,3)
         auxTempoBala2 = -tempoBala2
 
         bala3X = canhao3X + 8
         bala3Y = canhao3Y
         bala3MudançaX = 0
         bala3MudançaY = 0
-        tempoBala3 = randint(1,2)
+        tempoBala3 = randint(1,3)
         auxTempoBala3 = -tempoBala3
 
         bala4X = canhao4X
@@ -877,19 +898,19 @@ while sair != True: #CÓDIGO REFERENTE AO MAPA 1
                 auxTempoBala1 = tempoMapa2
             if auxTempoBala1 + tempoBala1 == tempoMapa2: # a bala vai ser disparada a cada tempo definido da bala (de 1 a 3) de forma aleatória
                 bala1Y = canhao1Y # a bala volta para a posição inicial
-                tempoBala1 = randint(1,2)
+                tempoBala1 = randint(1,3)
                 somtiro.play()
             if pygame.Rect(bala2X, bala2Y, 10, 10).collidepoint(bala2X, 0):
                 auxTempoBala2 = tempoMapa2
             if auxTempoBala2 + tempoBala2 == tempoMapa2:
                 bala2Y = canhao2Y
-                tempoBala2 = randint(1,2)
+                tempoBala2 = randint(1,3)
                 somtiro.play()
             if pygame.Rect(bala3X, bala3Y, 10, 10).collidepoint(bala3X, 0):
                 auxTempoBala3 = tempoMapa2
             if auxTempoBala3 + tempoBala3 == tempoMapa2:
                 bala3Y = canhao3Y
-                tempoBala3 = randint(1,2)
+                tempoBala3 = randint(1,3)
                 somtiro.play()
             if pygame.Rect(bala4X, bala4Y, 10, 10).collidepoint(0, bala4Y):
                 auxTempoBala4 = tempoMapa2
@@ -929,10 +950,10 @@ while sair != True: #CÓDIGO REFERENTE AO MAPA 1
                 pygame.mixer.music.play(-1)
                 # Tela antes do próximo mapa
                 janela.fill(preto)
-                texto3 = fonte.render('Nível 3', True, vermelho)
-                janela.blit(texto3, (180, 215))
+                NomeNivel3 = pygame.image.load(os.path.join(diretorio_imagens, 'nivel3.png'))
+                janela.blit(NomeNivel3, (0,0))
                 pygame.display.flip()
-                time.sleep(4) 
+                time.sleep(6) 
                 #-----------------------------------------------------
                 jogadorX = 462 #462
                 jogadorY = 25 #25
