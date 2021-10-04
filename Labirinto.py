@@ -577,7 +577,7 @@ desenharMapa(mapa1, -5, -5)
 
 for x in range(500): # pega as coordenadas de cada pixel preto do mapa e adiciona em uma lista, para ser possível fazer as colisões.
         for y in range(500):
-            if janela.get_at((x, y)) == preto:
+            if janela.get_at((x, y)) == branco:
                 listaX.append(x)
                 listaY.append(y)
 
@@ -629,8 +629,7 @@ while sair != True: #CÓDIGO REFERENTE AO MAPA 1
     bala2 = pygame.Rect(bala2X, bala2Y, 10, 10)
     bala3 = pygame.Rect(bala3X, bala3Y, 10, 10)
 
-    for i in range(len(listaX)): # desenha o mapa 1
-        janela.set_at((listaX[i], listaY[i]), branco)
+    desenharMapa(mapa1, -5, -5) #desenha o mapa 1
         
 
     pygame.draw.rect(janela, vermelho, (jogador)) # desenha o jogador
