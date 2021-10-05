@@ -1,6 +1,5 @@
-import time, pygame, os, sys, sqlite3, banco_de_dados_gerador
+import time, pygame, os, sys, sqlite3
 from random import randint
-from banco_de_dados_gerador import itens2
 from pygame.constants import MOUSEBUTTONDOWN, QUIT
 
 # inicializa todos os módulos que necessitam de inicialização dentro do pygame.
@@ -11,9 +10,8 @@ banco_de_dados = sqlite3.connect('nome_pontuacao.db')
 cursor = banco_de_dados.cursor() #Objeto que vai permitir realizar alterações no banco de dados
 
 
-#itens = cursor.fetchall() #Vai atribuir a variável 'itens' os 10 primeiros registros do banco de dados
-itens1 = itens2.copy()
-banco_de_dados.commit()
+#Vai atribuir a variável 'itens' os 10 primeiros registros do banco de dados
+itens1 = cursor.fetchmany(10)
 
 # Criar a janela
 janela = pygame.display.set_mode((500, 550))
@@ -1202,11 +1200,13 @@ while sair != True: #CÓDIGO REFERENTE AO MAPA 1
 
                         #Inserindo pontuação e nome no banco de dados:
                         cursor.execute("INSERT INTO nomes_pontos VALUES("+str(pontos)+",'"+nome+"')")
+                        
+                        #Ordenando os registros de acordo com a pontuação de maneira crescente
                         cursor.execute("SELECT rowid, * FROM nomes_pontos ORDER BY Score LIMIT 10")
-                        itens2 = cursor.fetchmany(10)
-                        itens1 = itens2.copy()
+                        
+                        itens1 = cursor.fetchmany(10) #Atualizando o valor de itens1 após o fim do jogo
                         banco_de_dados.commit() #Aplicando alterações no banco de dados.
-                        banco_de_dados.close()
+                        banco_de_dados.close() #Fechando conexão com o banco de dados
                         tela_rank(largura_janela,altura_janela)
 
                     pygame.display.flip() 
