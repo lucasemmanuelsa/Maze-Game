@@ -69,20 +69,16 @@ altura_janela = 550
 
 #Criação dos botões Continuar e sair:
 class Botão:
-    def __init__(self,texto,largura_botão,alura_botão,posição,elevação):
+    def __init__(self,texto,largura_botão,altura_botão,posição):
 
         #Atributos principais:
         self.pressed = False
-        self.elevação = elevação
-        self.dynamic_elevação = elevação
-        self.original_y_posição = posição[1]
-
         #Retângulo superior:
-        self.top_rect = pygame.Rect(posição,(largura_botão,alura_botão))
+        self.top_rect = pygame.Rect(posição,(largura_botão,altura_botão))
         self.top_color = '#475F77'
 
         #Segundo retângulo:
-        self.bottom_rect = pygame.Rect(posição,(largura_botão,elevação))
+        self.bottom_rect = pygame.Rect(posição,(largura_botão,altura_botão))
         self.bottom_color = '#354B5E'
 
         #texto do botão:
@@ -91,12 +87,9 @@ class Botão:
 
     #Função para desenhar o botão:
     def desenhar_botão(self):
-        #Efeito de botão:
-        self.top_rect.y = self.original_y_posição - self.dynamic_elevação
         self.text_rect.center = self.top_rect.center
-
         self.bottom_rect.midtop = self.top_rect.midtop
-        self.bottom_rect.height = self.top_rect.height + self.dynamic_elevação
+        
 
         pygame.draw.rect(janela,self.bottom_color,self.bottom_rect,border_radius = 12)
         pygame.draw.rect(janela,self.top_color,self.top_rect,border_radius = 15)
@@ -110,15 +103,12 @@ class Botão:
             self.top_color = vermelho
         
             if pygame.mouse.get_pressed()[0]:
-                self.dynamic_elevação = 0
                 self.pressed = True
         
             else:
-                self.dynamic_elevação = self.elevação
                 if self.pressed == True:
                     self.pressed = False
         else:
-            self.dynamic_elevação = self.elevação
             self.top_color = azul
 
 #Função referente a tela de Ranking:
@@ -144,10 +134,6 @@ def tela_rank(largura_janela,altura_janela):
                 if x > 170 and y > 510 and x < 330 and y < 540:
                     sair = True 
 
-                """ if x > 30 and y > 510 and x < 190 and y < 540:
-                    pass """ #Rever
-
-                
 
         #Inserindo texto de rank, score e nome:
         mensagem_rank = "RANK"
@@ -313,9 +299,8 @@ def tela_rank(largura_janela,altura_janela):
     
     return janela_rank
 
-#Criandos objetos derivados da classe Botão:
-#botão_continuar = Botão("Continuar",160,30,(30,510),6) REVER!
-botão_sair = Botão("Sair",160,30,(170,510),6)  
+#Criando instância da classe Botão:
+botão_sair = Botão("Sair",160,30,(170,510))  
 
 def criarCanhão(imagem ,x, y):
     janela.blit(imagem, (x, y))
