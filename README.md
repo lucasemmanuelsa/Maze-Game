@@ -27,7 +27,7 @@
 
 ```pip install pygame```
 
-- Faça o download do arquivo Labirinto.py do repositório oficial do jogo.
+- Faça o clone do repositório oficial do jogo.
 - Navegue até o diretório onde o arquivo Labirinto.py está localizado usando o terminal.
 - Execute o jogo digitando o seguinte comando:
 
