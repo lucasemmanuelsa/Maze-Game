@@ -32,5 +32,6 @@
 - Execute o jogo digitando o seguinte comando:
 
 ```python Labirinto.py```
+```python3 Labirinto.py```
 
 - Prepare-se para uma jornada cheia de adrenalina, onde a habilidade de navegação e a destreza são essenciais para alcançar a vitória!
