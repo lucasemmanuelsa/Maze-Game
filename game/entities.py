@@ -50,7 +50,9 @@ class Cannon:
         return pygame.Rect(self.bala_x, self.bala_y, TAMANHO_BALA, TAMANHO_BALA)
 
     def desenhar_bala(self, janela: pygame.Surface) -> None:
-        pygame.draw.rect(janela, ROSA, self.rect_bala)
+        # Evita desenhar balas fora da arena (ex.: sobre o HUD inferior em y > 480)
+        if 0 <= self.bala_x <= 490 and 0 <= self.bala_y <= 476:
+            pygame.draw.rect(janela, ROSA, self.rect_bala)
 
     def desenhar_canhao(self, janela: pygame.Surface) -> None:
         janela.blit(self.sprite, (self.x, self.y))

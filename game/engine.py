@@ -49,31 +49,37 @@ class MazeGame:
             colisao = WallCollisionMap(superficie_mapa, lvl.posicao_mapa)
             self._mapas_cache[lvl.numero] = (superficie_mapa, colisao)
 
-    def executar(self) -> None:
+    def executar(self, nivel_inicial: int = 1, pular_menu: bool = False) -> None:
         """Executa o fluxo completo: Intro -> Menu -> Fases -> Banco/Ranking."""
-        self.assets.tocar_musica("enter.mp3", volume=0.08, loop=-1)
+        if pular_menu:
+            nome_jogador = "TST"
+        else:
+            self.assets.tocar_musica("enter.mp3", volume=0.08, loop=-1)
 
-        if not exibir_intro(self.janela, self.assets):
-            pygame.quit()
-            return
+            if not exibir_intro(self.janela, self.assets):
+                pygame.quit()
+                return
 
-        nome_jogador = exibir_menu(self.janela, self.assets)
-        if nome_jogador is None:
-            pygame.quit()
-            return
+            nome_jogador = exibir_menu(self.janela, self.assets)
+            if nome_jogador is None:
+                pygame.quit()
+                return
 
         vidas = VIDAS_INICIAIS
         pontuacao_total = 0
+        fases_para_jogar = [lvl for lvl in self.levels if lvl.numero >= nivel_inicial]
 
-        for config_fase in self.levels:
+        for config_fase in fases_para_jogar:
             concluiu, tempo_fase, vidas = self._jogar_fase(config_fase, vidas)
             if not concluiu:
                 pygame.quit()
                 return
             pontuacao_total += tempo_fase
 
-        # Todas as fases concluídas: salva no banco e exibe o High Scores
-        self.db.salvar_pontuacao(pontuacao_total, nome_jogador)
+        # Salva pontuação apenas quando jogou a campanha completa desde o Nível 1
+        if nivel_inicial == 1 and not pular_menu:
+            self.db.salvar_pontuacao(pontuacao_total, nome_jogador)
+
         top_10 = self.db.obter_top_10()
         exibir_ranking(self.janela, self.assets, top_10, self.clock)
         pygame.quit()

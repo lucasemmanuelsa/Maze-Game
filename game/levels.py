@@ -122,4 +122,56 @@ LEVELS: list[LevelConfig] = [
         ],
         tocar_tiro_inicial=True,
     ),
+    # Nível 4 — Brabo Deus (Fogo cruzado nas 4 direções + Ida e Volta)
+    LevelConfig(
+        numero=4,
+        nome="Brabo Deus",
+        arquivo_mapa="mapa4.png",
+        escala_mapa=(465, 465),
+        posicao_mapa=(16, 16),
+        arquivo_splash="nivel4.png",
+        duracao_splash=6.0,
+        arquivo_musica="Map4Song.mp3",
+        spawn_jogador=(25, 462),
+        # Ida até o canto superior direito (checkpoint) e volta ao canto inferior esquerdo!
+        waypoints_chegada=[(462, 25), (25, 462)],
+        tamanho_entidade=12,
+        tamanho_colisao_parede=11,
+        velocidade_jogador=VELOCIDADE_JOGADOR_PADRAO,
+        canhoes=[
+            # Topo atirando para baixo (novidade do Nível 4!)
+            CannonSpec(
+                x=140, y=2, direcao="down", offset_bala=(8, 8),
+                intervalo_recarga=(2, 4), recarga_inicial=(1, 2),
+            ),
+            CannonSpec(
+                x=320, y=2, direcao="down", offset_bala=(8, 8),
+                intervalo_recarga=(2, 4), recarga_inicial=(2, 3),
+            ),
+            # Base atirando para cima
+            CannonSpec(
+                x=230, y=475, direcao="up", offset_bala=(8, 0),
+                intervalo_recarga=(2, 3), recarga_inicial=(1, 2),
+            ),
+            # Direita atirando para a esquerda
+            CannonSpec(
+                x=475, y=115, direcao="left", offset_bala=(0, 8),
+                intervalo_recarga=(1, 3), recarga_inicial=(1, 2),
+            ),
+            CannonSpec(
+                x=475, y=345, direcao="left", offset_bala=(0, 8),
+                intervalo_recarga=(1, 3), recarga_inicial=(2, 3),
+            ),
+            # Esquerda atirando para a direita
+            CannonSpec(
+                x=2, y=195, direcao="right", offset_bala=(8, 8),
+                intervalo_recarga=(2, 3), recarga_inicial=(2, 3),
+            ),
+            CannonSpec(
+                x=2, y=395, direcao="right", offset_bala=(8, 8),
+                intervalo_recarga=(2, 4), recarga_inicial=(1, 3),
+            ),
+        ],
+        tocar_tiro_inicial=True,
+    ),
 ]
