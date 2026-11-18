@@ -1,4 +1,4 @@
-"""Ponto de entrada principal do jogo Maze and Cannons."""
+"""Ponto de entrada principal do jogo Maze and Cannons (1 a 3 jogadores locais)."""
 import argparse
 import os
 from game.engine import MazeGame
@@ -13,6 +13,13 @@ def main() -> None:
         help="Nível inicial para iniciar o jogo (padrão: 1)",
     )
     parser.add_argument(
+        "--jogadores",
+        type=int,
+        choices=(1, 2, 3),
+        default=int(os.environ.get("MAZE_PLAYERS", "1")),
+        help="Quantidade de jogadores locais: 1, 2 ou 3 (padrão: 1)",
+    )
+    parser.add_argument(
         "--direto",
         action="store_true",
         default=os.environ.get("MAZE_SKIP_MENU", "0") == "1",
@@ -21,7 +28,11 @@ def main() -> None:
     args, _ = parser.parse_known_args()
 
     jogo = MazeGame()
-    jogo.executar(nivel_inicial=args.nivel, pular_menu=args.direto)
+    jogo.executar(
+        nivel_inicial=args.nivel,
+        pular_menu=args.direto,
+        num_jogadores=args.jogadores,
+    )
 
 
 if __name__ == "__main__":
