@@ -1,4 +1,5 @@
-"""Componentes de interface, seletor local de 1-3 jogadores, HUD cooperativo, telas e ranking."""
+"""Componentes de interface, seletor local de 1-3 jogadores (com Dash), HUD frenético (Combo/Núcleo/Boss) e ranking."""
+from __future__ import annotations
 import time
 import pygame
 
@@ -13,11 +14,14 @@ from game.config import (
     CORES_RANKING,
     DOURADO,
     LABELS_RANKING,
+    LARANJA,
     LARGURA_JANELA,
     PRETO,
     VERDE_LIMAO,
     VERMELHO,
+    VIOLETA,
 )
+from game.entities import BossCore
 from game.puzzles import LevelPuzzleManager
 from game.visuals import BIOMES, desenhar_orbe_guardiao
 
@@ -69,33 +73,50 @@ def desenhar_hud(
     janela: pygame.Surface,
     assets: AssetManager,
     vidas: int,
-    tempo_mapa: int,
+    tempo_efetivo: int,
     puzzles: LevelPuzzleManager,
     num_jogadores: int,
+    boss: BossCore | None = None,
 ) -> None:
-    """Desenha o painel inferior com corações, progresso de cristais, status do portão/EMP e tempo."""
+    """Desenha o HUD inferior (corações, cristais, núcleo/pilares/EMP, combo e tempo líquido) + barra do Boss."""
     pygame.draw.rect(janela, (14, 16, 22), (0, 488, LARGURA_JANELA, 62))
     pygame.draw.line(janela, (62, 70, 88), (0, 488), (LARGURA_JANELA, 488), 2)
 
-    # 1. Corações da equipe (esquerda, até 4 por linha para não sobrepor o centro)
+    # 1. Corações da equipe (esquerda, até 4 por linha)
     for i in range(max(0, vidas)):
         col_i = i % 4
         row_i = i // 4
         janela.blit(assets.coracao, (10 + col_i * 25, 495 + row_i * 24))
 
-    # 2. Indicadores de Cristais e Portão (centro)
-    fonte_info = pygame.font.SysFont("monospace", 13, bold=True)
-    cor_cristal = VERDE_LIMAO if puzzles.portal_destrancado else DOURADO
+    # 2. Indicadores centrais (Cristais + Objetivo Especial + Combo)
+    fonte_info = pygame.font.SysFont("monospace", 12, bold=True)
+    cor_cristal = VERDE_LIMAO if puzzles.cristais_coletados >= puzzles.total_cristais else DOURADO
+
+    extra_obj = ""
+    if boss is not None:
+        extra_obj = " | BOSS OK!" if boss.derrotado else f" | BOSS:{boss.escudos_restantes}"
+    elif puzzles.tem_nucleo:
+        if puzzles.nucleo_entregue:
+            extra_obj = " | REATOR OK"
+        elif puzzles.portador_nucleo is not None and num_jogadores > 1:
+            extra_obj = f" | NUC:{puzzles.calor_nucleo:.0f}s"
+        else:
+            extra_obj = " | REATOR:0/1"
+
     txt_cristal = fonte_info.render(
-        f"CRISTAIS {puzzles.cristais_coletados}/{puzzles.total_cristais}",
+        f"CRISTAIS {puzzles.cristais_coletados}/{puzzles.total_cristais}{extra_obj}",
         True,
         cor_cristal,
     )
-    janela.blit(txt_cristal, (164, 496))
+    janela.blit(txt_cristal, (118, 494))
 
     if puzzles.canhoes_congelados:
         status_sub = f"EMP ATIVO ({puzzles.timer_sabotagem:.1f}s)"
         cor_sub = CIANO
+    elif puzzles.pilares_rects and any(puzzles.pilares_ativos) and not puzzles.boss_derrotado:
+        ativos_n = sum(1 for a in puzzles.pilares_ativos if a)
+        status_sub = f"PILARES {ativos_n}/{len(puzzles.pilares_rects)} ({puzzles.timer_janela_pilares:.1f}s)"
+        cor_sub = LARANJA
     elif puzzles.portao_aberto:
         status_sub = "PORTAO: ABERTO"
         cor_sub = VERDE_LIMAO
@@ -103,25 +124,42 @@ def desenhar_hud(
         status_sub = "PORTAO: TRANCADO"
         cor_sub = AMARELO
     txt_portao = fonte_info.render(status_sub, True, cor_sub)
-    janela.blit(txt_portao, (164, 514))
+    janela.blit(txt_portao, (118, 512))
 
-    if num_jogadores > 1:
-        modo_txt = fonte_info.render(f"CO-OP {num_jogadores}P", True, CIANO)
-        janela.blit(modo_txt, (164, 531))
+    if puzzles.combo > 0:
+        combo_str = f"COMBO x{puzzles.combo} (-{puzzles.bonus_segundos}s)"
+        cor_terceira = LARANJA
+    elif puzzles.bonus_segundos > 0:
+        combo_str = f"BONUS: -{puzzles.bonus_segundos}s" + (f" | {num_jogadores}P" if num_jogadores > 1 else "")
+        cor_terceira = VERDE_LIMAO
+    else:
+        combo_str = f"CO-OP {num_jogadores}P | DASH OK" if num_jogadores > 1 else "SOLO | DASH: ESPACO"
+        cor_terceira = CIANO
+    txt_terceira = fonte_info.render(combo_str, True, cor_terceira)
+    janela.blit(txt_terceira, (118, 530))
 
-    # 3. Cronômetro (direita)
-    cronometro = assets.fonte(46).render(f"Tempo:{tempo_mapa}", True, BRANCO)
-    janela.blit(cronometro, (324, 496))
+    # 3. Cronômetro líquido (direita)
+    cronometro = assets.fonte(44).render(f"Tempo:{tempo_efetivo}", True, BRANCO)
+    janela.blit(cronometro, (328, 497))
 
-    # 4. Mensagem contextual no topo da tela quando há eventos de puzzle/resgate
+    # 4. Banner superior: mensagem de evento OU barra de escudos do Boss na Fase 8
     if puzzles.timer_mensagem > 0.0 and puzzles.mensagem_evento:
-        fonte_msg = pygame.font.SysFont("monospace", 12, bold=True)
+        fonte_msg = pygame.font.SysFont("monospace", 11, bold=True)
         surf_msg = fonte_msg.render(puzzles.mensagem_evento, True, AMARELO)
-        larg = surf_msg.get_width() + 16
+        larg = min(LARGURA_JANELA - 8, surf_msg.get_width() + 14)
         rx = (LARGURA_JANELA - larg) // 2
         pygame.draw.rect(janela, (12, 14, 20), (rx, 1, larg, 16), border_radius=4)
         pygame.draw.rect(janela, DOURADO, (rx, 1, larg, 16), width=1, border_radius=4)
-        janela.blit(surf_msg, (rx + 8, 2))
+        janela.blit(surf_msg, (rx + 7, 2))
+    elif boss is not None and not boss.derrotado:
+        fonte_boss = pygame.font.SysFont("monospace", 11, bold=True)
+        escudos_vis = "■" * boss.escudos_restantes + "□" * (boss.max_escudos - boss.escudos_restantes)
+        surf_b = fonte_boss.render(f"OLHO PRIMORDIAL [{escudos_vis}]", True, VIOLETA)
+        larg = surf_b.get_width() + 16
+        rx = (LARGURA_JANELA - larg) // 2
+        pygame.draw.rect(janela, (18, 10, 26), (rx, 1, larg, 16), border_radius=4)
+        pygame.draw.rect(janela, VIOLETA, (rx, 1, larg, 16), width=1, border_radius=4)
+        janela.blit(surf_b, (rx + 8, 2))
 
 
 def _processar_eventos_espera() -> tuple[bool, bool]:
@@ -294,7 +332,6 @@ def exibir_menu(
             text_surface = fonte_nome.render(nome_jogador, True, BRANCO)
             janela.blit(text_surface, (170, 188))
 
-            # Painel inferior de seleção de modo multiplayer local (1P / 2P / 3P)
             pygame.draw.rect(janela, (16, 18, 26), (25, 315, 450, 215), border_radius=10)
             pygame.draw.rect(janela, DOURADO, (25, 315, 450, 215), width=2, border_radius=10)
 
@@ -311,24 +348,30 @@ def exibir_menu(
                 surf_l = fonte_mini.render(lbl, True, BRANCO if selecionado else (180, 186, 200))
                 janela.blit(surf_l, (rect_b.centerx - surf_l.get_width() // 2, rect_b.centery - 7))
 
-            # Mostra os Orbes Guardiões ativos e seus controles
             esquemas = (
-                ["P1: Setas ou WASD (Modo Solo com Trava de Placa)"]
+                ["P1: Setas/WASD | Dash: ESPACO ou SHIFT"]
                 if num_jogadores == 1
                 else (
-                    ["P1 (Rubi): Setas ↑↓←→", "P2 (Esmeralda): W A S D"]
+                    ["P1: Setas + Espaco(Dash)", "P2: WASD + E/Shift(Dash)"]
                     if num_jogadores == 2
-                    else ["P1 (Rubi): Setas", "P2 (Esmeralda): WASD", "P3 (Solar): I J K L"]
+                    else ["P1: Setas+Esp", "P2: WASD + E", "P3: IJKL + U"]
                 )
             )
             for idx in range(num_jogadores):
                 ox = 68 + idx * 145
-                desenhar_orbe_guardiao(janela, ox, 405, 16, idx, 1, 0, t)
+                desenhar_orbe_guardiao(janela, ox, 404, 16, idx, 1, 0, t)
                 surf_c = fonte_mini.render(esquemas[idx], True, CORES_JOGADORES[idx])
                 if num_jogadores == 1:
-                    janela.blit(surf_c, (95, 406))
+                    janela.blit(surf_c, (95, 405))
                 else:
-                    janela.blit(surf_c, (ox - 24, 428))
+                    janela.blit(surf_c, (ox - 28, 428))
+
+            sub_info = fonte_mini.render(
+                "8 FASES: Portais Gemeos, Nucleo Co-op, Drones e Boss Supremo!",
+                True,
+                CIANO,
+            )
+            janela.blit(sub_info, (250 - sub_info.get_width() // 2, 466))
 
             dica = (
                 "Digite 3 letras da equipe e aperte ESPACO/ENTER!"
@@ -365,9 +408,9 @@ def exibir_splash_nivel(
     fonte_cenario = pygame.font.SysFont("monospace", 13, bold=True)
     surf_cen = fonte_cenario.render(f"CENARIO: {tema.titulo_cenario.upper()}", True, DOURADO)
     modo_str = (
-        "1P SOLO: Ative a placa, pegue os cristais e abra o portal!"
+        "1P SOLO: Use DASH p/ atravessar tiros e atordoar drones!"
         if num_jogadores == 1
-        else f"CO-OP {num_jogadores}P: Segurem placas, puxem a alavanca e peguem seus cristais!"
+        else f"CO-OP {num_jogadores}P: Usem DASH, passem o Nucleo e sincronizem Pilares!"
     )
     surf_modo = pygame.font.SysFont("monospace", 11, bold=True).render(modo_str, True, CIANO)
     janela.blit(surf_cen, (250 - surf_cen.get_width() // 2, 504))

@@ -1,4 +1,4 @@
-"""Renderizador procedural de cenários (alvenaria, pisos, vinhas, partículas) e do Orbe Guardião."""
+"""Renderizador procedural de 8 cenários 2.5D, vinhas temáticas, faíscas de impacto e Orbe Guardião."""
 from dataclasses import dataclass
 import math
 import random
@@ -6,16 +6,13 @@ import pygame
 
 from game.collision import WallCollisionMap
 from game.config import (
-    AMARELO,
     BRANCO,
     CIANO,
     CORES_JOGADORES,
     CORES_NUCLEO_JOGADORES,
-    DOURADO,
+    LARANJA,
     NOMES_CURTOS_JOGADORES,
     PRETO,
-    VERDE_LIMAO,
-    VERMELHO,
 )
 
 
@@ -38,7 +35,7 @@ class BiomeTheme:
     moldura_pedra: tuple[int, int, int]
     moldura_borda: tuple[int, int, int]
     cor_particula: tuple[int, int, int]
-    tipo_particula: str  # "firefly", "bubble", "ember", "stardust"
+    tipo_particula: str
 
 
 BIOMES: dict[str, BiomeTheme] = {
@@ -114,6 +111,79 @@ BIOMES: dict[str, BiomeTheme] = {
         cor_particula=(255, 232, 138),
         tipo_particula="stardust",
     ),
+    # --- NOVOS CENÁRIOS DAS FASES 5 A 8 ---
+    "gelido": BiomeTheme(
+        chave="gelido",
+        titulo_cenario="Cripta Glacial dos Espelhos",
+        piso_base=(24, 42, 62),
+        piso_variacao=(32, 56, 82),
+        piso_rejunte=(16, 30, 48),
+        muro_topo=(205, 242, 255),
+        muro_meio=(128, 192, 228),
+        muro_base=(62, 114, 156),
+        muro_rejunte=(90, 156, 196),
+        vinha_escura=(74, 172, 218),
+        vinha_clara=(195, 248, 255),
+        flor_detalhe=(255, 255, 255),
+        moldura_pedra=(52, 98, 134),
+        moldura_borda=(176, 236, 255),
+        cor_particula=(220, 248, 255),
+        tipo_particula="snow",
+    ),
+    "cyber": BiomeTheme(
+        chave="cyber",
+        titulo_cenario="Usina Arcana de Neon",
+        piso_base=(18, 20, 34),
+        piso_variacao=(24, 28, 48),
+        piso_rejunte=(12, 36, 52),
+        muro_topo=(92, 228, 242),
+        muro_meio=(52, 68, 104),
+        muro_base=(28, 34, 58),
+        muro_rejunte=(236, 48, 168),
+        vinha_escura=(168, 28, 142),
+        vinha_clara=(56, 244, 214),
+        flor_detalhe=(255, 92, 214),
+        moldura_pedra=(34, 42, 72),
+        moldura_borda=(56, 236, 255),
+        cor_particula=(72, 248, 224),
+        tipo_particula="spark",
+    ),
+    "sombrio": BiomeTheme(
+        chave="sombrio",
+        titulo_cenario="Labirinto do Vazio Abissal",
+        piso_base=(22, 14, 34),
+        piso_variacao=(30, 18, 46),
+        piso_rejunte=(12, 8, 20),
+        muro_topo=(174, 122, 236),
+        muro_meio=(104, 64, 158),
+        muro_base=(54, 30, 88),
+        muro_rejunte=(76, 42, 122),
+        vinha_escura=(98, 28, 156),
+        vinha_clara=(198, 112, 255),
+        flor_detalhe=(124, 252, 212),
+        moldura_pedra=(58, 32, 92),
+        moldura_borda=(188, 126, 255),
+        cor_particula=(204, 144, 255),
+        tipo_particula="stardust",
+    ),
+    "caos": BiomeTheme(
+        chave="caos",
+        titulo_cenario="Santuário do Núcleo Primordial",
+        piso_base=(32, 16, 28),
+        piso_variacao=(44, 22, 38),
+        piso_rejunte=(58, 24, 32),
+        muro_topo=(244, 236, 250),
+        muro_meio=(152, 138, 174),
+        muro_base=(78, 62, 98),
+        muro_rejunte=(238, 64, 96),
+        vinha_escura=(184, 32, 68),
+        vinha_clara=(255, 214, 92),
+        flor_detalhe=(255, 255, 255),
+        moldura_pedra=(82, 44, 68),
+        moldura_borda=(255, 214, 102),
+        cor_particula=(255, 196, 98),
+        tipo_particula="ember",
+    ),
 }
 
 
@@ -126,10 +196,6 @@ def renderizar_cenario_labirinto(
     chave_bioma: str,
     seed: int = 1,
 ) -> pygame.Surface:
-    """
-    Constrói uma superfície 500x500 rica em detalhes (piso de lajotas, sombras projetadas,
-    muros de pedra chanfrados 2.5D e vinhas penduradas) preservando 100% a geometria de colisão.
-    """
     tema = BIOMES.get(chave_bioma, BIOMES["floresta"])
     w = WallCollisionMap.LARGURA_MAPA
     h = WallCollisionMap.ALTURA_MAPA
@@ -145,8 +211,6 @@ def renderizar_cenario_labirinto(
     mb_r, mb_g, mb_b = tema.muro_base
     mr_r, mr_g, mr_b = tema.muro_rejunte
 
-    # 1. Passada rápida pixel-a-pixel para lajotas de piso, sombras 2.5D e alvenaria encorpada
-    # Cria máscara visual levemente encorpada (+1px à direita e +2px de face frontal abaixo) sem afetar colisão!
     vis_wall = bytearray(w * h)
     for y in range(16, h - 16):
         row_off = y * w
@@ -157,7 +221,7 @@ def renderizar_cenario_labirinto(
             elif grade[idx - 1] == 1:
                 vis_wall[idx] = 1
             elif grade[idx - w] == 1:
-                vis_wall[idx] = 2  # Face frontal inferior da parede 2.5D
+                vis_wall[idx] = 2
             elif y >= 18 and grade[idx - 2 * w] == 1 and grade[idx - w] == 0:
                 vis_wall[idx] = 2
 
@@ -182,7 +246,6 @@ def renderizar_cenario_labirinto(
             if vw == 1:
                 acima_vazio = y > 0 and vis_wall[idx - w] == 0
                 esq_vazio = x > 0 and vis_wall[idx - 1] == 0
-
                 if acima_vazio or esq_vazio:
                     r, g, b = mt_r, mt_g, mt_b
                 elif brick_y == 0 or ((x + brick_shift) % 12 == 0):
@@ -193,12 +256,10 @@ def renderizar_cenario_labirinto(
                     r = _clamp_u8(mm_r + delta)
                     g = _clamp_u8(mm_g + delta)
                     b = _clamp_u8(mm_b + delta)
-
                 buf[out_i] = r
                 buf[out_i + 1] = g
                 buf[out_i + 2] = b
             elif vw == 2:
-                # Face lateral/frontal escura do muro de pedra (efeito 2.5D com argamassa vertical)
                 if ((x + brick_shift) % 12 == 0):
                     r, g, b = _clamp_u8(mr_r - 14), _clamp_u8(mr_g - 14), _clamp_u8(mr_b - 14)
                 else:
@@ -222,7 +283,6 @@ def renderizar_cenario_labirinto(
                     g = _clamp_u8(g + speck)
                     b = _clamp_u8(b + speck)
 
-                # Sombra projetada suave no piso abaixo e à direita do muro
                 sombra = 0
                 if y >= 2 and vis_wall[idx - w] != 0:
                     sombra += 18
@@ -242,7 +302,6 @@ def renderizar_cenario_labirinto(
 
     superficie = pygame.image.frombuffer(bytes(buf), (w, h), "RGB").convert()
 
-    # 2. Crescimento procedural de vinhas, musgos e brotos sobre os muros e beiradas
     rng = random.Random(seed * 9173 + 42)
     for y in range(20, h - 22, 3):
         row_off = y * w
@@ -255,7 +314,6 @@ def renderizar_cenario_labirinto(
             esq_vazio = grade[idx - 1] == 0
             dir_vazio = grade[idx + 1] == 0
 
-            # Tufos de musgo/vinhas rasteiras no topo dos muros
             if (acima_vazio or esq_vazio or dir_vazio) and rng.random() < 0.20:
                 comp = rng.randint(3, 8)
                 vx, vy = x, y
@@ -269,7 +327,6 @@ def renderizar_cenario_labirinto(
                 if rng.random() < 0.28:
                     superficie.set_at((x, y), tema.flor_detalhe)
 
-            # Cipós / vinhas penduradas na beirada inferior dos muros (caem levemente sobre a sombra, sem afetar colisão!)
             if abaixo_vazio and rng.random() < 0.14:
                 pend = rng.randint(2, 5)
                 px = x
@@ -286,7 +343,6 @@ def renderizar_cenario_labirinto(
 
 
 def desenhar_moldura_cenario(janela: pygame.Surface, chave_bioma: str) -> None:
-    """Substitui as antigas linhas brancas por uma muralha/moldura esculpida para os canhões."""
     tema = BIOMES.get(chave_bioma, BIOMES["floresta"])
     esp = 9
     bordas = [
@@ -299,7 +355,6 @@ def desenhar_moldura_cenario(janela: pygame.Surface, chave_bioma: str) -> None:
         pygame.draw.rect(janela, tema.moldura_pedra, r, border_radius=2)
         pygame.draw.rect(janela, tema.moldura_borda, r, width=1, border_radius=2)
 
-    # Cantoneiras rúnicas nos 4 vértices
     for cx, cy in ((14, 14), (475, 14), (14, 475), (475, 475)):
         cant = pygame.Rect(cx, cy, 12, 12)
         pygame.draw.rect(janela, tema.muro_base, cant, border_radius=3)
@@ -308,17 +363,18 @@ def desenhar_moldura_cenario(janela: pygame.Surface, chave_bioma: str) -> None:
 
 
 class AmbientParticles:
-    """Partículas atmosféricas leves em tempo real para cada cenário (vagalumes, bolhas, brasas, poeira astral)."""
+    """Partículas atmosféricas contínuas de cada cenário."""
 
-    def __init__(self, chave_bioma: str, quantidade: int = 24) -> None:
+    def __init__(self, chave_bioma: str, quantidade: int = 26) -> None:
         self.tema = BIOMES.get(chave_bioma, BIOMES["floresta"])
         rng = random.Random(hash(chave_bioma) & 0xFFFF)
+        tp = self.tema.tipo_particula
         self.particulas = [
             [
                 rng.uniform(24.0, 476.0),
                 rng.uniform(24.0, 476.0),
                 rng.uniform(-0.35, 0.35),
-                rng.uniform(-0.55, -0.15) if self.tema.tipo_particula in ("bubble", "ember") else rng.uniform(-0.25, 0.25),
+                rng.uniform(0.25, 0.65) if tp == "snow" else (rng.uniform(-0.55, -0.15) if tp in ("bubble", "ember") else rng.uniform(-0.25, 0.25)),
                 rng.uniform(0.0, 6.28),
             ]
             for _ in range(quantidade)
@@ -343,12 +399,47 @@ class AmbientParticles:
             pulso = 0.5 + 0.5 * math.sin(t * 4.0 + p[4])
             if tipo == "bubble":
                 pygame.draw.circle(janela, cor, (ix, iy), 2, 1)
-            elif tipo == "ember":
-                raio = 2 if pulso > 0.6 else 1
-                pygame.draw.circle(janela, cor, (ix, iy), raio)
+            elif tipo in ("ember", "snow"):
+                pygame.draw.circle(janela, cor, (ix, iy), 2 if pulso > 0.65 else 1)
             else:
                 if pulso > 0.35:
                     pygame.draw.circle(janela, cor, (ix, iy), 2 if pulso > 0.8 else 1)
+
+
+class SparkSystem:
+    """Sistema de faíscas explosivas ('juice') para Dash, Teleporte, Cristais, Núcleo e Boss."""
+
+    def __init__(self) -> None:
+        self.sparks: list[list] = []  # [x, y, vx, vy, timer, max_timer, cor]
+
+    def emitir(
+        self,
+        cx: float,
+        cy: float,
+        cor: tuple[int, int, int],
+        quantidade: int = 12,
+        velocidade: float = 95.0,
+    ) -> None:
+        for i in range(quantidade):
+            ang = (2.0 * math.pi * i) / max(1, quantidade) + random.uniform(-0.25, 0.25)
+            vel = velocidade * random.uniform(0.45, 1.15)
+            dur = random.uniform(0.22, 0.48)
+            self.sparks.append([cx, cy, math.cos(ang) * vel, math.sin(ang) * vel, dur, dur, cor])
+
+    def atualizar_e_desenhar(self, janela: pygame.Surface, dt: float) -> None:
+        vivas = []
+        for s in self.sparks:
+            s[4] -= dt
+            if s[4] <= 0.0:
+                continue
+            s[0] += s[2] * dt
+            s[1] += s[3] * dt
+            s[2] *= 0.92
+            s[3] *= 0.92
+            raio = 2 if s[4] > s[5] * 0.5 else 1
+            pygame.draw.circle(janela, s[6], (int(s[0]), int(s[1])), raio)
+            vivas.append(s)
+        self.sparks = vivas
 
 
 def desenhar_orbe_guardiao(
@@ -363,52 +454,60 @@ def desenhar_orbe_guardiao(
     em_capsula_reviver: bool = False,
     progresso_reviver: float = 1.0,
     invulneravel: bool = False,
+    em_dash: bool = False,
+    em_turbo: bool = False,
+    carregando_nucleo: bool = False,
+    rastro: list[tuple[int, int]] | None = None,
     mostrar_tag: bool = False,
     fonte_tag: pygame.font.Font | None = None,
 ) -> None:
-    """
-    Desenha o objeto controlável unificado do jogo inteiro: o Orbe Guardião Rúnico.
-    Possui anel metálico ancestral, núcleo energético e visor direcional expressivo.
-    """
+    """Desenha o Orbe Guardião com rastro de Dash, aura de Turbo e indicador de Núcleo Instável."""
     cor_principal = CORES_JOGADORES[indice_jogador % len(CORES_JOGADORES)]
     cor_nucleo = CORES_NUCLEO_JOGADORES[indice_jogador % len(CORES_NUCLEO_JOGADORES)]
     cx = x + tamanho // 2
     cy = y + tamanho // 2
     raio = max(6, tamanho // 2 + 1)
 
+    if rastro:
+        for idx_r, (rx, ry) in enumerate(rastro):
+            rc = max(2, raio - 3 + idx_r // 2)
+            pygame.draw.circle(janela, CIANO if em_dash else cor_principal, (rx + tamanho // 2, ry + tamanho // 2), rc, 1)
+
     if em_capsula_reviver:
-        # Cápsula de Alma aguardando resgate de um aliado!
         pulso = 2 + int(2 * math.sin(t * 8.0))
         pygame.draw.circle(janela, cor_principal, (cx, cy), raio + pulso, 2)
         pygame.draw.circle(janela, (40, 50, 70), (cx, cy), raio - 1)
         pygame.draw.circle(janela, cor_nucleo, (cx, cy), max(2, raio - 4))
-        # Barra de tempo restante acima da cápsula
         larg_barra = 18
         preenchido = max(1, int(larg_barra * max(0.0, min(1.0, progresso_reviver))))
         pygame.draw.rect(janela, PRETO, (cx - larg_barra // 2 - 1, y - 8, larg_barra + 2, 5))
         pygame.draw.rect(janela, cor_principal, (cx - larg_barra // 2, y - 7, preenchido, 3))
         return
 
-    if invulneravel and int(t * 16) % 2 == 0:
+    if em_dash:
+        pygame.draw.circle(janela, CIANO, (cx, cy), raio + 3, 2)
+    elif em_turbo:
+        pygame.draw.circle(janela, LARANJA, (cx, cy), raio + 2, 1)
+
+    if carregando_nucleo:
+        pulso_n = 3 + int(2 * math.sin(t * 14.0))
+        pygame.draw.circle(janela, (255, 110, 220), (cx, cy), raio + pulso_n, 2)
+
+    if invulneravel and not em_dash and int(t * 16) % 2 == 0:
         cor_principal = BRANCO
 
-    # Sombra de flutuação no chão
     pygame.draw.ellipse(janela, (12, 14, 18), (cx - raio + 1, cy + raio - 2, (raio - 1) * 2, 4))
-
-    # Aro metálico rúnico externo + corpo esférico + brilho especular
     pygame.draw.circle(janela, (52, 46, 38), (cx, cy), raio + 1)
     pygame.draw.circle(janela, (214, 184, 112), (cx, cy), raio, 1)
-    pygame.draw.circle(janela, cor_principal, (cx, cy), raio - 1)
+    pygame.draw.circle(janela, BRANCO if em_dash else cor_principal, (cx, cy), raio - 1)
     pygame.draw.circle(janela, cor_nucleo, (cx - 1, cy - 1), max(2, raio - 4))
 
-    # Olhos/visor luminosos apontando para a direção do movimento
     ox = 2 if olhar_dx > 0 else (-2 if olhar_dx < 0 else 0)
     oy = 2 if olhar_dy > 0 else (-2 if olhar_dy < 0 else 0)
     pygame.draw.rect(janela, (22, 18, 28), (cx - 3 + ox, cy - 2 + oy, 6, 3), border_radius=1)
     janela.set_at((cx - 2 + ox, cy - 1 + oy), BRANCO)
     janela.set_at((cx + 1 + ox, cy - 1 + oy), BRANCO)
 
-    # Etiqueta compacta P1 / P2 / P3 no modo multiplayer
     if mostrar_tag and fonte_tag is not None:
         tag = NOMES_CURTOS_JOGADORES[indice_jogador % 3]
         surf_t = fonte_tag.render(tag, True, cor_principal)
@@ -423,7 +522,6 @@ def desenhar_projetil_canhao(
     t: float,
     congelado: bool = False,
 ) -> None:
-    """Desenha uma Esfera de Plasma Flamejante com rastro direcional no lugar do quadrado rosa."""
     if not (0 <= bx <= 490 and 0 <= by <= 476):
         return
     cx, cy = bx + 5, by + 5
@@ -432,7 +530,6 @@ def desenhar_projetil_canhao(
         pygame.draw.circle(janela, BRANCO, (cx, cy), 2)
         return
 
-    # Rastro curto atrás da esfera
     rx = 5 if direcao == "left" else (-5 if direcao == "right" else 0)
     ry = 5 if direcao == "up" else (-5 if direcao == "down" else 0)
     pygame.draw.circle(janela, (190, 28, 110), (cx + rx, cy + ry), 4)

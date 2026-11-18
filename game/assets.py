@@ -6,14 +6,14 @@ from game.config import CAMINHO_FONTE, DIRETORIO_IMAGENS, DIRETORIO_SONS
 
 
 class AssetManager:
-    """Gerencia o cache de imagens, fontes, trilhas retrô, efeitos de puzzles e ambientações."""
+    """Gerencia o cache de imagens, fontes, trilhas retrô, efeitos de puzzles/ação e ambientações."""
 
     def __init__(self) -> None:
         self._imagens: dict[tuple[str, tuple[int, int] | None], pygame.Surface] = {}
         self._fontes: dict[int, pygame.font.Font] = {}
         self._sons_ambiente: dict[str, pygame.mixer.Sound] = {}
 
-        pygame.mixer.set_num_channels(12)
+        pygame.mixer.set_num_channels(16)
         self._canal_ambiente = pygame.mixer.Channel(0)
 
         # Efeitos sonoros clássicos
@@ -21,16 +21,25 @@ class AssetManager:
         self.som_dano = self._carregar_som("dano.mp3", 0.55)
         self.som_game_over = self._carregar_som("somGameOver.mp3", 0.70)
         self.som_click = self._carregar_som("click.mp3", 0.15)
-        self.som_chegada = self._carregar_som("somchegada.mp3", 0.25)
+        self.som_chegada = self._carregar_som("somchegada.mp3", 0.28)
 
-        # Novos efeitos sonoros das mecânicas cooperativas e interações de cenário
+        # Efeitos sonoros de puzzles cooperativos
         self.som_placa = self._carregar_som("placa.wav", 0.28)
         self.som_portao = self._carregar_som("portao.wav", 0.32)
         self.som_alavanca = self._carregar_som("alavanca.wav", 0.35)
         self.som_cristal = self._carregar_som("cristal.wav", 0.36)
-        self.som_portal_aberto = self._carregar_som("portal_aberto.wav", 0.40)
+        self.som_portal_aberto = self._carregar_som("portal_aberto.wav", 0.42)
         self.som_sabotagem = self._carregar_som("sabotagem.wav", 0.34)
-        self.som_reviver = self._carregar_som("reviver.wav", 0.40)
+        self.som_reviver = self._carregar_som("reviver.wav", 0.42)
+
+        # Novos efeitos sonoros frenéticos (Dash, Teleporte, Esteira Turbo, Núcleo e Boss)
+        self.som_dash = self._carregar_som("dash.wav", 0.30)
+        self.som_teleporte = self._carregar_som("teleporte.wav", 0.36)
+        self.som_turbo = self._carregar_som("turbo.wav", 0.28)
+        self.som_nucleo_pegar = self._carregar_som("nucleo_pegar.wav", 0.38)
+        self.som_nucleo_encaixar = self._carregar_som("nucleo_encaixar.wav", 0.45)
+        self.som_boss_escudo = self._carregar_som("boss_escudo.wav", 0.46)
+        self.som_boss_explosao = self._carregar_som("boss_explosao.wav", 0.55)
 
         # Sprites base reutilizados
         self.coracao = self.carregar_imagem("coracao.png", escala=(22, 22))
@@ -94,7 +103,6 @@ class AssetManager:
         self._canal_ambiente.stop()
 
     def sprite_canhao(self, direcao: str) -> pygame.Surface:
-        """Retorna o sprite do canhão orientado para a direção do disparo."""
         if direcao == "right":
             return self.canhao_base
         canhao_esq = pygame.transform.flip(self.canhao_base, True, False)
